@@ -1,0 +1,2 @@
+#archivo con todas las herramientas utlizadas en la APP
+flask

@@ -1,0 +1,38 @@
+<!--archivo html de la pagina de acceso-->
+{% extends "plantilla.html" %} <!--tomamos como base plantilla.html-->
+
+{% block title %}Acceso{% endblock %}
+
+<!--cambiamos el CONTENIDO-->
+{% block content %}
+    <div class="container mt-5"><!--contenedor tamaña 5-->
+        <div class="row justify-content-center"><!--formulario fila centradas-->
+            <div class="col-sm-8"><!--columna tamaño 8-->
+                <div class="card"><!--cartas-->
+                    <div class="card-header"><!--encabezado de la carta-->
+                        <h1 class="text-center">Identificación</h1><!--cambiamos el TITULO tanto dentro de card como en la pagina-->
+                    </div>
+                    <div class="card-body"><!--body de la carta-->
+                        <form action="" method="post"><!--formulario-->
+                            <div class="form-group"><!--clase formulario-->
+                                <!--campo usuario-->
+                                <label for=username">Alias</label>
+                                <input type="text" class="form-control" id="username" name="username" required>
+                            </div>
+                            <div class="form-group"><!--clase formulario-->
+                                <!--campo password-->
+                                <label for=password">Contraseña</label>
+                                <input type="text" class="form-control" id="password" name="password" required>
+                            </div>
+                            <br>
+                            <div class="text-center"><!--clase formulario-->
+                                <!--boton añadir-->
+                                <input type="submit" class="btn btn-primary" value="Iniciar sesión">
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

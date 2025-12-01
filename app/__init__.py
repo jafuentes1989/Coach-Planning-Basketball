@@ -2,6 +2,10 @@
 from flask import Flask, render_template 
 #importamos la clase Flask
 #importamos render_template para renderizar las vistas creadas en HTML
+from flask_sqlalchemy import SQLAlchemy
+#Importamos SQLAlchemy para la gestion de la base de datos
+
+db=SQLAlchemy() #instanciamos SQLAlchemy como objeto DB
 
 def create_app(): #funcion para crear la APP
     app=Flask(__name__) #instancio APP como objeto Flask
@@ -9,8 +13,11 @@ def create_app(): #funcion para crear la APP
     #configuracion del proyecto
     app.config.from_mapping( #mapeo
         DEBUG=True, #debug activado
-        SECRET_KEY='dev'#key para DB
+        SECRET_KEY='dev',#key para DB
+        SQLALCHEMY_DATABASE_URI="sqlite:///cpb.db"#ruta de la base de datos
     )
+
+    db.init_app(app) #inicializamos la base de datos con la APP
 
     #registro de blueprints
     from . import perfil #importamos el archivo vistas
@@ -22,4 +29,7 @@ def create_app(): #funcion para crear la APP
     def inicio(): #funcion inicio
         return render_template('inicio.html')#devolvemos inicio.html
     
+    with app.app_context(): #contexto de la APP
+        db.create_all() #creamos las tablas de la base de datos
+
     return app #salida de la funcion

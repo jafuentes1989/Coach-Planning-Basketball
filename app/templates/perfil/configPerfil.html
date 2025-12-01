@@ -1,8 +1,59 @@
 <!--archivo de la pagina de configuracion de perfil del usuario-->
 {% extends "plantilla.html" %}
 
-{% block title %}Configuración de Perfil{% endblock %}
-
 {% block content %}
-    <h1>Configuración de Perfil</h1>
+    <div class="container mt-5"><!--contenedor tamaña 5-->
+        <div class="row justify-content-center"><!--formulario fila centradas-->
+            <div class="col-sm-8"><!--columna tamaño 8-->
+                <div class="card"><!--cartas-->
+                    <div class="card-header"><!--encabezado de la carta-->
+                        <h1 class="text-center">{% block title %}Configuración del perfil{% endblock %}</h1><!--cambiamos el TITULO tanto dentro de card como en la pagina-->
+                    </div>
+                    <div class="card-body"><!--body de la carta-->
+                        <form action="" method="post"><!--formulario-->
+                            <div class="form-group"><!--clase formulario-->
+                                <!--campo nombre-->
+                                <label for=nombre">Nombre</label>
+                                <input type="text" class="form-control" id="nombre" name="nombre" minlength="4" maxlength="20">
+                            </div>
+                            <div class="form-group"><!--clase formulario-->
+                                <!--campo apellido-->
+                                <label for=apellido">Apellido</label>
+                                <input type="text" class="form-control" id="apellido" name="apellido" minlength="4" maxlength="20">
+                            </div>
+                            <div class="form-group"><!--clase formulario-->
+                                <!--campo nivel entrenador-->
+                                <label for=nivel">Nivel entrenador</label>
+                                <select class="form-control" name="nivel" id="nivel">
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="Nacional">Nacional</option>
+                                </select>
+                            </div>
+                            <div class="form-group"><!--clase formulario-->
+                                <!--campo temporadas-->
+                                <label for=temporadas">Temporadas entrenando</label>
+                                <input type="number" class="form-control" id="temporadas" name="temporadas" min="1">
+                            </div>
+                            <div class="form-group"><!--clase formulario-->
+                                <!--campo club-->
+                                <label for=club">Club</label>
+                                <input type="text" class="form-control" id="club" name="club" minlength="4">
+                            </div>
+                            <br>
+                            <div class="text-center"><!--clase formulario-->
+                                <!--boton limpiar-->
+                                <input type="reset" class="btn btn-secondary" value="Limpiar">
+                            </div>
+                            <br>
+                            <div class="text-center"><!--clase formulario-->
+                                <!--boton guardar-->
+                                <input type="submit" class="btn btn-primary" value="Guardar">
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}

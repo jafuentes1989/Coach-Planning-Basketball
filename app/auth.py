@@ -1,13 +1,16 @@
 #archivo que trabaja la autenticación de usuarios
-from flask import Blueprint, render_template, request, redirect, url_for, flash 
+from flask import Blueprint, render_template, request, redirect, url_for, flash, session, g 
 #importamos Blueprint para crear vistas modulares
 #importamos render_template para renderizar las vistas creadas en HTML
 #importamos request para manejar las solicitudes HTTP
 #importamos redirect y url_for para redirigir a diferentes rutas
 #importamos flash para mostrar mensajes flash al usuario
+#importamos session para manejar sesiones de usuario
+#importamos g para almacenar datos durante la solicitud
 
 from werkzeug.security import generate_password_hash, check_password_hash
-#importamos funciones de seguridad para manejar contraseñas de forma segura
+#generate_password_hash para hashear contraseñas
+#check_password_hash para verificar contraseñas hasheadas
 
 from .models import Usuario 
 # importamos el modelo Usuario desde el archivo models.py
@@ -55,6 +58,23 @@ def registro(): #funcion de registro
     return render_template('auth/registro.html') #return de la funcion
 
 
-@bp.route('/acceso') #ruta para login usuarios
+@bp.route('/acceso', methods=('GET','POST')) #ruta para login usuarios
 def acceso(): #funcion de login
+    if request.method=='POST': #si el metodo de la solicitud es POST
+        alias=request.form['alias'] #obtenemos el alias del formulario
+        password=request.form['password'] #obtenemos la contraseña del formulario
+
+        #validar datos
+        usuario=Usuario.query.filter_by(alias=alias).first() #buscamos el usuario por alias
+        if usuario==None: #si el alias no existe
+            flash('Alias incorrecto. Por favor, intenta de nuevo.') #mostramos mensaje de error
+        elif not check_password_hash(usuario.password, password): #si la contraseña no coincide
+            flash('Contraseña incorrecta. Por favor, intenta de nuevo.') #mostramos mensaje de error
+
+        #iniciar sesion
+        else: #si el alias y la contraseña son correctos
+            session.clear() #limpiamos la sesión
+            session['usuario_alias']=usuario.alias #guardamos el alias del usuario en la sesión
+            return redirect(url_for('perfil.perfil')) #redireccionamos a la página de perfil
+            
     return render_template('auth/acceso.html') #return de la funcion

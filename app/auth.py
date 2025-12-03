@@ -78,3 +78,18 @@ def acceso(): #funcion de login
             return redirect(url_for('perfil.perfil')) #redireccionamos a la página de perfil
             
     return render_template('auth/acceso.html') #return de la funcion
+
+
+@bp.before_app_request #antes de cada solicitud
+def cargar_usuario(): #funcion para cargar el usuario antes de cada solicitud
+    alias=session.get('usuario_alias') #obtenemos el alias del usuario de la sesión
+    if alias is None: #si no hay alias en la sesión
+        g.usuario=None #establecemos g.usuario como None
+    else: #si hay alias en la sesión
+        g.usuario=Usuario.query.filter_by(alias=alias).first() #cargamos el usuario desde la base de datos y lo asignamos a g.usuario
+
+
+@bp.route('/cerrar_sesion') #ruta para cerrar sesión
+def cerrar_sesion(): #funcion para cerrar sesión
+    session.clear() #limpiamos la sesión
+    return redirect(url_for('inicio')) #redireccionamos a la pagina de inicio

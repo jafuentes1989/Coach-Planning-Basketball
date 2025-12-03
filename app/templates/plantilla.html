@@ -22,12 +22,21 @@
             </button><!--boton que aparece con pantalla pequeña-->
             <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
                 <ul class="navbar-nav">
+                    {% if g.usuario %} <!--navbar si hay sesion iniciada-->
+                    <li class="nav-item">
+                        <span class="nav-link active">{{g.usuario.alias}}</span>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('auth.cerrar_sesion')}}">Cerrar sesión</a>
+                    </li>
+                    {% else %} <!--navbar si NO hay sesion iniciada-->
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('auth.acceso')}}">Iniciar sesion</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('auth.registro')}}">Registrarse</a>
                     </li>
+                    {% endif%}
                 </ul>
             </div>
         </div>

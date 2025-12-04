@@ -18,6 +18,9 @@ from .models import Usuario
 from app import db 
 # importamos la instancia de la base de datos desde la aplicación
 
+import functools 
+#importamos functools para usar decoradores
+
 bp=Blueprint('auth',__name__, url_prefix='/auth') #creamos bp como objeto Blueprint
 
 @bp.route('/registro', methods=('GET','POST')) #ruta para registro de entrenadores
@@ -93,3 +96,12 @@ def cargar_usuario(): #funcion para cargar el usuario antes de cada solicitud
 def cerrar_sesion(): #funcion para cerrar sesión
     session.clear() #limpiamos la sesión
     return redirect(url_for('inicio')) #redireccionamos a la pagina de inicio
+
+
+def acceso_requerido(vista): #decorador para vistas que requieren acceso
+    @functools.wraps(vista) #preservamos la informacion de la vista original
+    def funcion_envuelta(**argumentos): #funcion envuelta
+        if g.usuario is None: #si no hay usuario en g
+            return redirect(url_for('auth.acceso')) #redireccionamos al acceso
+        return vista(**argumentos) #si hay usuario, llamamos a la vista original
+    return funcion_envuelta #devolvemos la funcion envuelta

@@ -3,9 +3,13 @@ from flask import Blueprint, render_template
 #importamos Blueprint para crear vistas modulares
 #importamos render_template para renderizar las vistas creadas en HTML
 
+from app.auth import acceso_requerido
+#importamos el decorador acceso_requerido desde auth.py
+
 bp=Blueprint('perfil',__name__, url_prefix='/perfil') #creamos bp como objeto Blueprint
 
 @bp.route('/') #ruta para perfil
+@acceso_requerido #decorador para requerir acceso
 def perfil(): #funcion de listado
     return render_template('perfil/perfil.html') #return de la funcion
 

@@ -1,0 +1,34 @@
+<!--archivo HTML de la pagina editar ejercicio-->
+{% extends "plantilla.html" %}
+
+{% block content %}
+    <section class="container-sm">
+        <h3 class="text-center mt-3 mb-3">{% block title %}Editar Ejercicio{% endblock %}</h3>
+        <form action="" method="post">
+            <div class="mb-3">
+                <label for="titulo" class="form-label">Título</label>
+                <input type="text" class="form-control" id="titulo" name="titulo" required value="{{ ejercicio.titulo }}">
+            </div>
+            <div class="mb-3">
+                <label for="imagen" class="form-label">Imagen (URL)</label>
+                <input type="text" class="form-control" id="imagen" name="imagen" value="{{ ejercicio.imagen_url }}">
+            </div>
+            <div class="mb-3">
+                <label for="descripcion" class="form-label">Descripción</label>
+                <textarea class="form-control" id="descripcion" name="descripcion" rows="3" required>{{ ejercicio.descripcion }}</textarea>
+            </div>
+            <div class="mb-3">
+                <label for="jugadores" class="form-label">Número de Jugadores</label>
+                <input type="number" class="form-control" id="jugadores" name="jugadores" required value="{{ ejercicio.jugadores }}">
+            </div>
+            <div class="mb-3">
+                <label for="duracion" class="form-label">Duración (minutos)</label>
+                <input type="number" class="form-control" id="duracion" name="duracion" required value="{{ ejercicio.duracion }}">
+            </div>
+            <div class="text-center">
+                <input type="submit" class="btn btn-primary" value="guardar">
+                <a href="{{ url_for('perfil.ejercicios') }}" class="btn btn-secondary">cancelar</a>
+            </div>
+        </form>
+    </section>
+{% endblock %}

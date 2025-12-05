@@ -34,16 +34,16 @@ class Ejercicio(db.Model): #clase Ejercicio que hereda de db.Model
     descripcion=db.Column(db.String(500)) #descripcion del ejercicio
     jugadores=db.Column(db.Integer) #número de jugadores
     duracion=db.Column(db.Integer) #duración del ejercicio en minutos
-    visibilidad=db.Column(db.Boolean, default=True) #visibilidad del ejercicio
+    #visibilidad=db.Column(db.Boolean, default=True) #visibilidad del ejercicio
 
-    def __init__(self, autor, titulo, imagen_url, descripcion, jugadores, duracion, visibilidad): #constructor de la clase Ejercicio
+    def __init__(self, autor, titulo, imagen_url, descripcion, jugadores, duracion): #constructor de la clase Ejercicio
         self.autor=autor
         self.titulo=titulo
         self.imagen_url=imagen_url
         self.descripcion=descripcion
         self.jugadores=jugadores
         self.duracion=duracion
-        self.visibilidad=visibilidad
+        #self.visibilidad=visibilidad
 
     def __repr__(self): #representación en cadena del objeto Ejercicio
         return f'<Ejercicio: {self.titulo}>'  
@@ -57,16 +57,16 @@ class Sesion(db.Model): #clase Sesion que hereda de db.Model
     titulo=db.Column(db.String(20), nullable=False) #título de la sesion
     descripcion=db.Column(db.String(500)) #descripcion de la sesion
     duracion=db.Column(db.Integer) #duración de la sesion en minutos
-    visibilidad=db.Column(db.Boolean, default=True) #visibilidad de la sesion
+    #visibilidad=db.Column(db.Boolean, default=True) #visibilidad de la sesion
 
-    def __init__(self, autor, idEjercicio, fecha, titulo, descripcion, duracion, visibilidad): #constructor de la clase Sesion
+    def __init__(self, autor, idEjercicio, fecha, titulo, descripcion, duracion): #constructor de la clase Sesion
         self.autor=autor
         self.idEjercicio=idEjercicio
         self.fecha=fecha
         self.titulo=titulo
         self.descripcion=descripcion
         self.duracion=duracion
-        self.visibilidad=visibilidad
+        #self.visibilidad=visibilidad
 
     def __repr__(self): #representación en cadena del objeto Sesion
         return f'<Sesion: {self.titulo}>'
@@ -82,14 +82,14 @@ class Planning(db.Model): #clase Planning que hereda de db.Model
     sesiones=db.Column(db.Integer) #numero de sesiones
     visibilidad=db.Column(db.Boolean, default=True) #visibilidad de la sesion
 
-    def __init__(self, autor, idSesion, fecha, titulo, descripcion, sesiones, visibilidad): #constructor de la clase Planning
+    def __init__(self, autor, idSesion, fecha, titulo, descripcion, sesiones): #constructor de la clase Planning
         self.autor=autor
         self.idSesion=idSesion
         self.fecha=fecha
         self.titulo=titulo
         self.descripcion=descripcion
         self.sesiones=sesiones
-        self.visibilidad=visibilidad
+        #self.visibilidad=visibilidad
 
     def __repr__(self): #representación en cadena del objeto Planning
         return f'<Planning: {self.titulo}>'

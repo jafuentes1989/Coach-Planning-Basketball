@@ -1,8 +1,60 @@
 <!--archivo de la pagina de ejercicios-->
 {% extends "plantilla.html" %}
 
-{% block title %}Ejercicios{% endblock %}
-
 {% block content %}
-    <h1>Ejercicios</h1>
+    <section class="container-fluid">
+        <nav class="navbar">
+            <h1>{% block title %}Ejercicios{% endblock %}</h1>
+            <a href="{{ url_for('ejercicios.crear_ejercicio') }}" class="btn btn-success">Nuevo</a>
+        </nav>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th class="col">ID</th>
+                    <th class="col">autor</th>
+                    <th class="col">titulo</th>
+                    <th class="col">imagen</th>
+                    <th class="col">descripcion</th>
+                    <th class="col">numero jugadores</th>
+                    <th class="col">duración</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ejercicio in ejercicios | reverse %}
+                {% if g.usuario.alias == ejercicio.autor %}
+                <tr>
+                    <td>
+                        <p>{{ ejercicio.id }}</p>
+                    </td>
+                    <td>
+                        <p>{{ ejercicio.autor }}</p>
+                    </td>
+                    <td>
+                        <p>{{ ejercicio.titulo }}</p>
+                    </td>
+                    <td>
+                        <p>{{ ejercicio.imagen_url }}</p>
+                    </td>
+                    <td>
+                        <p>{{ ejercicio.descripcion }}</p>
+                    </td>
+                    <td>
+                        <p>{{ ejercicio.jugadores }}</p>
+                    </td>
+                    <td>
+                        <p>{{ ejercicio.duracion }}</p>
+                    </td>
+                    <td>
+                        <a href="{{ url_for('ejercicios.editar_ejercicio', id=ejercicio.id) }}" class="btn btn-info btn-sm">Editar</a>
+                    </td>
+                    <td>
+                        <a href="{{ url_for('ejercicios.eliminar_ejercicio', id=ejercicio.id) }}" class="btn btn-danger">Eliminar</a>
+                    </td>
+                </tr>
+                {% endif %}
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
 {% endblock %}

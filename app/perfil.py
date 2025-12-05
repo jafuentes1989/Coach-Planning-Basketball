@@ -1,9 +1,10 @@
 #archivo que contiene las vistas de la APP
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, g
 #importamos Blueprint para crear vistas modulares
 #importamos render_template para renderizar las vistas creadas en HTML
 
 from app.auth import acceso_requerido
+from .models import Ejercicio
 #importamos el decorador acceso_requerido desde auth.py
 
 bp=Blueprint('perfil',__name__, url_prefix='/perfil') #creamos bp como objeto Blueprint
@@ -18,8 +19,11 @@ def config(): #funcion de config
     return render_template('perfil/configPerfil.html') #return de la funcion
 
 @bp.route('/ejercicios') #ruta para listado ejercicios
+@acceso_requerido #decorador para requerir acceso
 def ejercicios(): #funcion de listado ejercicios
-    return render_template('perfil/ejercicios.html') #return de la funcion
+    # obtener ejercicios del autor logueado y pasarlos a la plantilla
+    ejercicios = Ejercicio.query.filter_by(autor=g.usuario.alias).all()
+    return render_template('perfil/ejercicios.html', ejercicios=ejercicios)
 
 @bp.route('/sesiones') #ruta para listado sesiones
 def sesiones(): #funcion de listado sesiones

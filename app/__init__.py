@@ -24,6 +24,8 @@ def create_app(): #funcion para crear la APP
     app.register_blueprint(perfil.bp) #registramos el blueprint PERFIL
     from . import auth #importamos el archivo auth
     app.register_blueprint(auth.bp) #registramos el blueprint AUTH
+    from . import ejercicios #importamos el archivo ejercicios
+    app.register_blueprint(ejercicios.bp) #registramos el blueprint EJERCICIOS
 
     @app.route('/') #vista inicio
     def inicio(): #funcion inicio

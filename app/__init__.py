@@ -4,8 +4,11 @@ from flask import Flask, render_template
 #importamos render_template para renderizar las vistas creadas en HTML
 from flask_sqlalchemy import SQLAlchemy
 #Importamos SQLAlchemy para la gestion de la base de datos
+from flask_migrate import Migrate
+#Importamos Migrate para las migraciones de la base de datos
 
 db=SQLAlchemy() #instanciamos SQLAlchemy como objeto DB
+migrate = Migrate() #instanciamos Migrate
 
 def create_app(): #funcion para crear la APP
     app=Flask(__name__) #instancio APP como objeto Flask
@@ -18,6 +21,7 @@ def create_app(): #funcion para crear la APP
     )
 
     db.init_app(app) #inicializamos la base de datos con la APP
+    migrate.init_app(app, db) #inicializamos Migrate con la APP y DB
 
     #registro de blueprints
     from . import perfil #importamos el archivo vistas
@@ -26,6 +30,8 @@ def create_app(): #funcion para crear la APP
     app.register_blueprint(auth.bp) #registramos el blueprint AUTH
     from . import ejercicios #importamos el archivo ejercicios
     app.register_blueprint(ejercicios.bp) #registramos el blueprint EJERCICIOS
+    from . import sesiones #importamos el archivo sesiones
+    app.register_blueprint(sesiones.bp) #registramos el blueprint SESIONES
 
     @app.route('/') #vista inicio
     def inicio(): #funcion inicio

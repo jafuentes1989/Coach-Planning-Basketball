@@ -52,16 +52,16 @@ class Ejercicio(db.Model): #clase Ejercicio que hereda de db.Model
 class Sesion(db.Model): #clase Sesion que hereda de db.Model
     id=db.Column(db.Integer, primary_key=True, unique=True) #id de la sesion, clave primaria
     autor=db.Column(db.String(20), db.ForeignKey('usuario.alias'), nullable=False) #autor de la sesion, clave foránea que referencia al alias del usuario
-    idEjercicio=db.Column(db.Integer, db.ForeignKey('ejercicio.id'), nullable=False) #id del ejercicio, clave foránea que referencia al id del ejercicio
+    #idEjercicio=db.Column(db.Integer, db.ForeignKey('ejercicio.id'), nullable=False) #id del ejercicio, clave foránea que referencia al id del ejercicio
     fecha=db.Column(db.DateTime, nullable=False) #fecha de la sesión
     titulo=db.Column(db.String(20), nullable=False) #título de la sesion
     descripcion=db.Column(db.String(500)) #descripcion de la sesion
     duracion=db.Column(db.Integer) #duración de la sesion en minutos
     #visibilidad=db.Column(db.Boolean, default=True) #visibilidad de la sesion
 
-    def __init__(self, autor, idEjercicio, fecha, titulo, descripcion, duracion): #constructor de la clase Sesion
+    def __init__(self, autor, fecha, titulo, descripcion, duracion): #constructor de la clase Sesion
         self.autor=autor
-        self.idEjercicio=idEjercicio
+        #self.idEjercicio=idEjercicio
         self.fecha=fecha
         self.titulo=titulo
         self.descripcion=descripcion
@@ -75,16 +75,16 @@ class Sesion(db.Model): #clase Sesion que hereda de db.Model
 class Planning(db.Model): #clase Planning que hereda de db.Model
     id=db.Column(db.Integer, primary_key=True, unique=True) #id de la planning, clave primaria
     autor=db.Column(db.String(20), db.ForeignKey('usuario.alias'), nullable=False) #autor de la planning, clave foránea que referencia al alias del usuario
-    idSesion=db.Column(db.Integer, db.ForeignKey('sesion.id'), nullable=False) #id de la sesion, clave foránea que referencia al id de la sesion
+    #idSesion=db.Column(db.Integer, db.ForeignKey('sesion.id'), nullable=False) #id de la sesion, clave foránea que referencia al id de la sesion
     fecha=db.Column(db.DateTime, nullable=False) #fecha de la sesión
     titulo=db.Column(db.String(20), nullable=False) #título de la sesion
     descripcion=db.Column(db.String(500)) #descripcion de la sesion
     sesiones=db.Column(db.Integer) #numero de sesiones
     visibilidad=db.Column(db.Boolean, default=True) #visibilidad de la sesion
 
-    def __init__(self, autor, idSesion, fecha, titulo, descripcion, sesiones): #constructor de la clase Planning
+    def __init__(self, autor, fecha, titulo, descripcion, sesiones): #constructor de la clase Planning
         self.autor=autor
-        self.idSesion=idSesion
+        #self.idSesion=idSesion
         self.fecha=fecha
         self.titulo=titulo
         self.descripcion=descripcion

@@ -1,0 +1,30 @@
+<!--archivo HTML de la pagina crear sesion-->
+{% extends "plantilla.html" %}
+
+{% block content %}
+    <section class="container-sm">
+        <h3 class="text-center mt-3 mb-3">{% block title %}Crear Sesión{% endblock %}</h3>
+        <form action="" method="post">
+            <div class="mb-3">
+                <label for="fecha" class="form-label">Fecha</label>
+                <input type="date" class="form-control" id="fecha" name="fecha" required>
+            </div>
+            <div class="mb-3">
+                <label for="titulo" class="form-label">Título</label>
+                <input type="text" class="form-control" id="titulo" name="titulo" required>
+            </div>
+            <div class="mb-3">
+                <label for="descripcion" class="form-label">Descripción</label>
+                <textarea class="form-control" id="descripcion" name="descripcion" rows="3" required></textarea>
+            </div>
+            <div class="mb-3">
+                <label for="duracion" class="form-label">Duración (minutos)</label>
+                <input type="number" class="form-control" id="duracion" name="duracion" required>
+            </div>
+            <div class="text-center">
+                <input type="submit" class="btn btn-primary" value="guardar">
+                <a href="{{ url_for('perfil.sesiones') }}" class="btn btn-secondary">cancelar</a>
+            </div>
+        </form>
+    </section>
+{% endblock %}

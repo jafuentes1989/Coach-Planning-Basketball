@@ -1,2 +1,4 @@
 #archivo con todas las herramientas utlizadas en la APP
 flask
+Flask-SQLAlchemy
+Flask-Migrate

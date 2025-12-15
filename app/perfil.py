@@ -32,6 +32,7 @@ def sesiones(): #funcion de listado sesiones
     return render_template('perfil/sesiones.html', sesiones=sesiones) #return de la funcion
 
 @bp.route('/planning') #ruta para configurar planning
+@acceso_requerido #protegemos la vista con el decorador acceso_requerido
 def planning(): #funcion de planning
     planning = Planning.query.filter_by(autor=g.usuario.alias).all()
     return render_template('perfil/planning.html', planning=planning) #return de la funcion

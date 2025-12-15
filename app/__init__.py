@@ -32,6 +32,8 @@ def create_app(): #funcion para crear la APP
     app.register_blueprint(ejercicios.bp) #registramos el blueprint EJERCICIOS
     from . import sesiones #importamos el archivo sesiones
     app.register_blueprint(sesiones.bp) #registramos el blueprint SESIONES
+    from . import planning #importamos el archivo planning
+    app.register_blueprint(planning.bp) #registramos el blueprint PLANNING
 
     @app.route('/') #vista inicio
     def inicio(): #funcion inicio

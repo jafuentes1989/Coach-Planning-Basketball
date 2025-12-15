@@ -1,8 +1,61 @@
-<!--archivo de la planning-->
+<!--archivo de la pagina de planning-->
 {% extends "plantilla.html" %}
 
-{% block title %}Planning{% endblock %}
-
 {% block content %}
-    <h1>Planning</h1>
+    <section class="container-fluid">
+        <nav class="navbar">
+            <h1>{% block title %}Sesiones{% endblock %}</h1>
+            <a href="{{ url_for('planning.crear_planning') }}" class="btn btn-success">Nueva</a>
+        </nav>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th class="col">ID</th>
+                    <th class="col">autor</th>
+                    <th class="col">ID sesiones</th>
+                    <th class="col">fecha</th>
+                    <th class="col">titulo</th>
+                    <th class="col">descripcion</th>
+                    <th class="col">num_sesiones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for planning in planning | reverse %}
+                {% if g.usuario.alias == planning.autor %}
+                <!--FALTARIA EL ID DEL EJERCICIO-->
+                <tr>
+                    <td>
+                        <p>{{ planning.id }}</p>
+                    </td>
+                    <td>
+                        <p>{{ planning.autor }}</p>
+                    </td>
+                    <td>
+                        <p>{{ planning.idEjercicio }}</p>
+                    </td>
+                    <td>
+                        <p>{{ planning.fecha }}</p>
+                    </td>
+                    <td>
+                        <p>{{ planning.titulo }}</p>
+                    </td>
+                    <td>
+                        <p>{{ planning.descripcion }}</p>
+                    </td>
+                    <td>
+                        <p>{{ planning.num_sesiones }}</p>
+                    </td>
+                    <td>
+                        <a href="{{ url_for('planning.editar_planning', id=planning.id) }}" class="btn btn-info btn-sm">Editar</a>
+                    </td>
+                    <td>
+                        <a href="{{ url_for('planning.eliminar_planning', id=planning.id) }}" class="btn btn-danger">Eliminar</a>
+                    </td>
+                </tr>
+                {% endif %}
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
 {% endblock %}

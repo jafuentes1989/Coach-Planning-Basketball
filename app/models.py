@@ -79,16 +79,16 @@ class Planning(db.Model): #clase Planning que hereda de db.Model
     fecha=db.Column(db.DateTime, nullable=False) #fecha de la sesión
     titulo=db.Column(db.String(20), nullable=False) #título de la sesion
     descripcion=db.Column(db.String(500)) #descripcion de la sesion
-    sesiones=db.Column(db.Integer) #numero de sesiones
+    num_sesiones=db.Column(db.Integer) #numero de sesiones
     visibilidad=db.Column(db.Boolean, default=True) #visibilidad de la sesion
 
-    def __init__(self, autor, fecha, titulo, descripcion, sesiones): #constructor de la clase Planning
+    def __init__(self, autor, fecha, titulo, descripcion, num_sesiones): #constructor de la clase Planning
         self.autor=autor
         #self.idSesion=idSesion
         self.fecha=fecha
         self.titulo=titulo
         self.descripcion=descripcion
-        self.sesiones=sesiones
+        self.num_sesiones=num_sesiones
         #self.visibilidad=visibilidad
 
     def __repr__(self): #representación en cadena del objeto Planning

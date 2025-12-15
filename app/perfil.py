@@ -4,7 +4,7 @@ from flask import Blueprint, render_template, g, g
 #importamos render_template para renderizar las vistas creadas en HTML
 
 from app.auth import acceso_requerido
-from .models import Ejercicio, Sesion
+from .models import Ejercicio, Sesion, Planning
 #importamos el decorador acceso_requerido desde auth.py
 
 bp=Blueprint('perfil',__name__, url_prefix='/perfil') #creamos bp como objeto Blueprint
@@ -33,7 +33,8 @@ def sesiones(): #funcion de listado sesiones
 
 @bp.route('/planning') #ruta para configurar planning
 def planning(): #funcion de planning
-    return render_template('perfil/planning.html') #return de la funcion
+    planning = Planning.query.filter_by(autor=g.usuario.alias).all()
+    return render_template('perfil/planning.html', planning=planning) #return de la funcion
 
 @bp.route('/seguidores') #ruta para listados de usuarios que te siguen
 def seguidores(): #funcion de seguidos

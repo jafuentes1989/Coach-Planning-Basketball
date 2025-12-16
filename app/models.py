@@ -11,8 +11,9 @@ class Usuario(db.Model): #clase Usuario que hereda de db.Model
     nivel=db.Column(db.String) #nivel de curso del usuario
     temporadas=db.Column(db.Integer) #número de temporadas completadas por el usuario
     club=db.Column(db.String) #club al que pertenece el usuario
+    profile_image=db.Column(db.String) #ruta de la imagen de perfil
 
-    def __init__(self, alias, nombre, apellido, email, password, nivel, temporadas, club): #constructor de la clase Usuario
+    def __init__(self, alias, nombre, apellido, email, password, nivel, temporadas, club, profile_image=None): #constructor de la clase Usuario
         self.alias=alias
         self.nombre=nombre
         self.apellido=apellido
@@ -21,6 +22,7 @@ class Usuario(db.Model): #clase Usuario que hereda de db.Model
         self.nivel=nivel
         self.temporadas=temporadas
         self.club=club
+        self.profile_image=profile_image
 
     def __repr__(self): #representación en cadena del objeto Usuario
         return f'<Usuario: {self.alias}>'  

@@ -1,8 +1,61 @@
-<!--archivo de la pagina de siguiendo-->
+<!--archivo de la pagina de usuarios que te siguen-->
 {% extends "plantilla.html" %}
 
-{% block title %}Siguiendo{% endblock %}
-
 {% block content %}
-    <h1>Siguiendo</h1>
+    <section class="container-fluid">
+        <nav class="navbar">
+            <h1>{% block title %}Siguiendo{% endblock %}</h1>
+        </nav>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th class="col">ID</th>
+                    <th class="col">alias</th>
+                    <th class="col">nombre</th>
+                    <th class="col">apellido</th>
+                    <th class="col">email</th>
+                    <th class="col">nivel</th>
+                    <th class="col">temporadas</th>
+                    <th class="col">club actual</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for siguiendo in siguiendos | reverse %}
+                <tr>
+                    <td>
+                        <p>{{ siguiendo.id }}</p>
+                    </td>
+                    <td>
+                        <p>{{ siguiendo.alias }}</p>
+                    </td>
+                    <td>
+                        <p>{{ siguiendo.nombre }}</p>
+                    </td>
+                    <td>
+                        <p>{{ siguiendo.apellido }}</p>
+                    </td>
+                    <td>
+                        <p>{{ siguiendo.email }}</p>
+                    </td>
+                    <td>
+                        <p>{{ siguiendo.nivel }}</p>
+                    </td>
+                    <td>
+                        <p>{{ siguiendo.temporadas }}</p>
+                    </td>
+                    <td>
+                        <p>{{ siguiendo.club }}</p>
+                    </td>
+                    <td>
+                        <a href="" class="btn btn-info btn-sm">Ver</a>
+                    </td>
+                    <td>
+                        <a href="" class="btn btn-danger">Dejar de seguir</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
 {% endblock %}

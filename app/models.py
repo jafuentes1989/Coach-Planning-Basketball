@@ -95,3 +95,18 @@ class Planning(db.Model): #clase Planning que hereda de db.Model
 
     def __repr__(self): #representación en cadena del objeto Planning
         return f'<Planning: {self.titulo}>'
+
+
+class Seguimiento(db.Model): #tabla de relaciones de seguidores
+    id = db.Column(db.Integer, primary_key=True, unique=True)
+    seguidor_alias = db.Column(db.String(20), db.ForeignKey('usuario.alias'), nullable=False) #quien sigue
+    seguido_alias = db.Column(db.String(20), db.ForeignKey('usuario.alias'), nullable=False) #a quien sigue
+    estado = db.Column(db.String(20), nullable=False, default='pendiente') #estado de la solicitud: pendiente/aceptado/rechazado
+
+    def __init__(self, seguidor_alias, seguido_alias, estado='pendiente'):
+        self.seguidor_alias = seguidor_alias
+        self.seguido_alias = seguido_alias
+        self.estado = estado
+
+    def __repr__(self):
+        return f'<Seguimiento: {self.seguidor_alias} -> {self.seguido_alias}>'

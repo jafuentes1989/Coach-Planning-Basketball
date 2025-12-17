@@ -1,12 +1,10 @@
-<!--archivo de la pagina de solicitudes-->
 {% extends "plantilla.html" %}
-
-{% block title %}Solicitudes{% endblock %}
 
 {% block content %}
     <section class="container-fluid">
         <nav class="navbar">
-            <h1>Solicitudes</h1>
+            <h1>{% block title %}Usuarios{% endblock %}</h1>
+            <a href="" class="btn btn-success">Filtrar</a>
         </nav>
 
         <table class="table">
@@ -20,11 +18,10 @@
                     <th class="col">nivel</th>
                     <th class="col">temporadas</th>
                     <th class="col">club actual</th>
-                    <th class="col">Acciones</th>
                 </tr>
             </thead>
             <tbody>
-                {% for usuario in solicitudes | reverse %}
+                {% for usuario in usuarios | reverse %}
                 <tr>
                     <td>
                         <p>{{ usuario.id }}</p>
@@ -51,17 +48,22 @@
                         <p>{{ usuario.club }}</p>
                     </td>
                     <td>
-                        <form action="{{ url_for('perfil.aceptar_solicitud', alias=usuario.alias) }}" method="post" class="d-inline">
-                            <button type="submit" class="btn btn-success btn-sm">Aceptar</button>
-                        </form>
-                        <form action="{{ url_for('perfil.rechazar_solicitud', alias=usuario.alias) }}" method="post" class="d-inline ms-1">
-                            <button type="submit" class="btn btn-danger btn-sm">Rechazar</button>
-                        </form>
+                        {% set estado = estados_seguidos.get(usuario.alias) %}
+                        {% if estado is none %}
+                            {# No existe relación: se puede enviar solicitud #}
+                            <form action="{{ url_for('perfil.seguir', alias=usuario.alias) }}" method="post" class="d-inline">
+                                <button type="submit" class="btn btn-info btn-sm">Solicitar</button>
+                            </form>
+                        {% elif estado == 'pendiente' %}
+                            {# Solicitud enviada pero aún no aceptada #}
+                            <button type="button" class="btn btn-secondary btn-sm" disabled>Solicitado</button>
+                        {% elif estado == 'aceptado' %}
+                            {# Relación aceptada: permitir eliminar (dejar de seguir) #}
+                            <form action="{{ url_for('perfil.dejar_de_seguir', alias=usuario.alias) }}" method="post" class="d-inline">
+                                <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+                            </form>
+                        {% endif %}
                     </td>
-                </tr>
-                {% else %}
-                <tr>
-                    <td colspan="9" class="text-center">No tienes solicitudes pendientes.</td>
                 </tr>
                 {% endfor %}
             </tbody>

@@ -1,8 +1,62 @@
-<!--archivo de la pagina de seguidos-->
+<!--archivo de la pagina de seguidores-->
 {% extends "plantilla.html" %}
 
-{% block title %}Seguidos{% endblock %}
-
 {% block content %}
-    <h1>Seguidores</h1>
+    <section class="container-fluid">
+        <nav class="navbar">
+            <h1>{% block title %}Seguidores{% endblock %}</h1>
+            <a href="{{ url_for('perfil.seguir_usuarios') }}" class="btn btn-success">Nuevo</a>
+        </nav>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th class="col">ID</th>
+                    <th class="col">alias</th>
+                    <th class="col">nombre</th>
+                    <th class="col">apellido</th>
+                    <th class="col">email</th>
+                    <th class="col">nivel</th>
+                    <th class="col">temporadas</th>
+                    <th class="col">club actual</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for seguidor in seguidores | reverse %}
+                <tr>
+                    <td>
+                        <p>{{ seguidor.id }}</p>
+                    </td>
+                    <td>
+                        <p>{{ seguidor.alias }}</p>
+                    </td>
+                    <td>
+                        <p>{{ seguidor.nombre }}</p>
+                    </td>
+                    <td>
+                        <p>{{ seguidor.apellido }}</p>
+                    </td>
+                    <td>
+                        <p>{{ seguidor.email }}</p>
+                    </td>
+                    <td>
+                        <p>{{ seguidor.nivel }}</p>
+                    </td>
+                    <td>
+                        <p>{{ seguidor.temporadas }}</p>
+                    </td>
+                    <td>
+                        <p>{{ seguidor.club }}</p>
+                    </td>
+                    <td>
+                        <a href="" class="btn btn-info btn-sm">Ver</a>
+                    </td>
+                    <td>
+                        <a href="" class="btn btn-danger">Eliminar</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
 {% endblock %}

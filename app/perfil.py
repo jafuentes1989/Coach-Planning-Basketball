@@ -15,7 +15,10 @@ bp=Blueprint('perfil',__name__, url_prefix='/perfil') #creamos bp como objeto Bl
 @bp.route('/') #ruta para perfil
 @acceso_requerido #decorador para requerir acceso
 def perfil(): #funcion de listado
-    return render_template('perfil/perfil.html', usuario=g.usuario) #return de la funcion
+    num_ejercicios = Ejercicio.query.filter_by(autor=g.usuario.alias).count()
+    num_sesiones = Sesion.query.filter_by(autor=g.usuario.alias).count()
+    num_planning = Planning.query.filter_by(autor=g.usuario.alias).count()
+    return render_template('perfil/perfil.html', usuario=g.usuario, num_ejercicios=num_ejercicios, num_sesiones=num_sesiones, num_planning=num_planning) #return de la funcion
 
 @bp.route('/configPerfil', methods=['GET', 'POST']) #ruta para configurar perfil de usuario
 @acceso_requerido
@@ -72,6 +75,10 @@ def seguidores(): #funcion de seguidos
 @bp.route('/siguiendo') #ruta para listados de usuarios a los que siguen
 def siguiendo(): #funcion de siguiendo
     return render_template('perfil/siguiendo.html') #return de la funcion
+
+@bp.route('/solicitudes') #ruta para listados de solicitudes de seguimiento
+def solicitudes(): #funcion de solicitudes
+    return render_template('perfil/solicitudes.html') #return de la funcion
 
 @bp.route('/upload_image', methods=['POST'])
 @acceso_requerido

@@ -23,16 +23,57 @@
             <div class="card mb-4">
                 <div class="card-body">
                     <h1>{{ usuario.nombre }} {{ usuario.apellido }}</h1>
-                    <div class="row">
-                        <div class="col-sm-6">
-                            <p><strong>Nombre:</strong> {{ usuario.nombre }}</p>
-                            <p><strong>Apellido:</strong> {{ usuario.apellido }}</p>
-                            <p><strong>Nivel:</strong> {{ usuario.nivel }}</p>
-                            <p><strong>Temporadas:</strong> {{ usuario.temporadas }}</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <h5 class="card-title text-danger">Nivel</h5>    
+                            {% if usuario.nivel == '1' %}
+                                <span class="text-primary" style="font-size: 24px;">●</span>
+                                <span class="text-muted" style="font-size: 24px;">○</span>
+                                <span class="text-muted" style="font-size: 24px;">○</span>
+                            {% elif usuario.nivel == '2' %}
+                                <span class="text-primary" style="font-size: 24px;">●</span>
+                                <span class="text-primary" style="font-size: 24px;">●</span>
+                                <span class="text-muted" style="font-size: 24px;">○</span>
+                            {% elif usuario.nivel == 'Nacional' %}
+                                <span class="text-primary" style="font-size: 24px;">●</span>
+                                <span class="text-primary" style="font-size: 24px;">●</span>
+                                <span class="text-primary" style="font-size: 24px;">●</span>
+                            {% else %}
+                                <span class="text-muted" style="font-size: 24px;">○</span>
+                                <span class="text-muted" style="font-size: 24px;">○</span>
+                                <span class="text-muted" style="font-size: 24px;">○</span>
+                            {% endif %}
+                            <br>
+                            <p><strong>{{ usuario.nivel }}</strong></p>
                         </div>
-                        <div class="col-sm-6">
-                            <p><strong>Email:</strong> {{ usuario.email }}</p>
-                            <p><strong>Club:</strong> {{ usuario.club }}</p>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <h5 class="card-title text-danger">Temporadas</h5>
+                            <br>
+                            {% set max_temporadas = 30 %}
+                            {% set percentage = ((usuario.temporadas / max_temporadas) * 100) | round %}
+                            <div class="progress mb-3" style="height: 20px;">
+                                <div class="progress-bar bg-primary" role="progressbar" style="width: {{ percentage }}%;" aria-valuenow="{{ usuario.temporadas }}" aria-valuemin="0" aria-valuemax="{{ max_temporadas }}">
+                                </div>
+                            </div>
+                            <br>
+                            <p><strong>{{ usuario.temporadas }}</strong></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <h5 class="card-title text-danger">Club Actual</h5>
+                            <br>
+                            <p><strong>{{ usuario.club }}</strong></p>
                         </div>
                     </div>
                 </div>
@@ -45,9 +86,9 @@
                                 <canvas width="100" height="100"></canvas>
                                 <input class="form-control" type="text" value="35" readonly style="width: 60px; margin: 0 auto;">
                             </div>
-                            <h5 class="card-title text-danger">Envato Website</h5>
-                            <p>Iniciado: 15 de julio</p>
-                            <p>Fecha límite: 15 de agosto</p>
+                            <h5 class="card-title text-danger">Seguidores</h5>
+                            <br>
+                            <a href="{{ url_for('perfil.seguidores') }}" class="btn btn-primary">Ver</a>
                         </div>
                     </div>
                 </div>
@@ -58,9 +99,9 @@
                                 <canvas width="100" height="100"></canvas>
                                 <input class="form-control" type="text" value="63" readonly style="width: 60px; margin: 0 auto;">
                             </div>
-                            <h5 class="card-title text-info">ThemeForest CMS</h5>
-                            <p>Iniciado: 15 de julio</p>
-                            <p>Fecha límite: 15 de agosto</p>
+                            <h5 class="card-title text-danger">Siguiendo</h5>
+                            <br>
+                            <a href="{{ url_for('perfil.siguiendo') }}" class="btn btn-primary">Ver</a>
                         </div>
                     </div>
                 </div>
@@ -71,9 +112,9 @@
                                 <canvas width="100" height="100"></canvas>
                                 <input class="form-control" type="text" value="75" readonly style="width: 60px; margin: 0 auto;">
                             </div>
-                            <h5 class="card-title text-success">VectorLab Portfolio</h5>
-                            <p>Iniciado: 15 de julio</p>
-                            <p>Fecha límite: 15 de agosto</p>
+                            <h5 class="card-title text-danger">Solicitudes</h5>
+                            <br>
+                            <a href="{{ url_for('perfil.solicitudes') }}" class="btn btn-primary">Ver</a>
                         </div>
                     </div>
                 </div>
@@ -84,53 +125,37 @@
                         <div class="card-body text-center">
                             <div class="mb-3">
                                 <canvas width="100" height="100"></canvas>
-                                <input class="form-control" type="text" value="50" readonly style="width: 60px; margin: 0 auto;">
+                                <input class="form-control" type="text" value="{{ num_ejercicios }}" readonly style="width: 60px; margin: 0 auto;">
                             </div>
-                            <h5 class="card-title text-primary">Adobe Muse Template</h5>
-                            <p>Iniciado: 15 de julio</p>
-                            <p>Fecha límite: 15 de agosto</p>
+                            <h5 class="card-title text-danger">Ejercicios</h5>
+                            <br>
+                            <a href="{{ url_for('perfil.ejercicios') }}" class="btn btn-primary">Ver</a>
                         </div>
                     </div>
                 </div>
                 <div class="col-md-4 mb-4">
                     <div class="card">
                         <div class="card-body text-center">
-                            <h5 class="card-title">Card 5</h5>
-                            <p class="card-text">Contenido de la card 5.</p>
+                            <div class="mb-3">
+                                <canvas width="100" height="100"></canvas>
+                                <input class="form-control" type="text" value="{{ num_sesiones }}" readonly style="width: 60px; margin: 0 auto;">
+                            </div>
+                            <h5 class="card-title text-danger">Sesiones</h5>
+                            <br>
+                            <a href="{{ url_for('perfil.sesiones') }}" class="btn btn-primary">Ver</a>
                         </div>
                     </div>
                 </div>
                 <div class="col-md-4 mb-4">
                     <div class="card">
                         <div class="card-body text-center">
-                            <h5 class="card-title">Card 6</h5>
-                            <p class="card-text">Contenido de la card 6.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-4 mb-4">
-                    <div class="card">
-                        <div class="card-body text-center">
-                            <h5 class="card-title">Card 7</h5>
-                            <p class="card-text">Contenido de la card 7.</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4 mb-4">
-                    <div class="card">
-                        <div class="card-body text-center">
-                            <h5 class="card-title">Card 8</h5>
-                            <p class="card-text">Contenido de la card 8.</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4 mb-4">
-                    <div class="card">
-                        <div class="card-body text-center">
-                            <h5 class="card-title">Card 9</h5>
-                            <p class="card-text">Contenido de la card 9.</p>
+                            <div class="mb-3">
+                                <canvas width="100" height="100"></canvas>
+                                <input class="form-control" type="text" value="{{ num_planning }}" readonly style="width: 60px; margin: 0 auto;">
+                            </div>
+                            <h5 class="card-title text-danger">Planning</h5>
+                            <br>
+                            <a href="{{ url_for('perfil.planning') }}" class="btn btn-primary">Ver</a>
                         </div>
                     </div>
                 </div>

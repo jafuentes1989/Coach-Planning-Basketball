@@ -2,10 +2,42 @@
 
 {% block content %}
     <section class="container-fluid">
-        <nav class="navbar">
+        <nav class="navbar mb-3">
             <h1>{% block title %}Usuarios{% endblock %}</h1>
-            <a href="" class="btn btn-success">Filtrar</a>
         </nav>
+
+        <form class="row g-2 mb-3" method="get" action="{{ url_for('perfil.seguir_usuarios') }}">
+            <div class="col-md-2">
+                <input type="text" name="alias" class="form-control" placeholder="Alias" value="{{ alias_filtro or '' }}">
+            </div>
+            <div class="col-md-2">
+                <input type="text" name="nombre" class="form-control" placeholder="Nombre" value="{{ nombre_filtro or '' }}">
+            </div>
+            <div class="col-md-2">
+                <input type="text" name="apellido" class="form-control" placeholder="Apellido" value="{{ apellido_filtro or '' }}">
+            </div>
+            <div class="col-md-3">
+                <input type="text" name="email" class="form-control" placeholder="Email" value="{{ email_filtro or '' }}">
+            </div>
+            <div class="col-md-1">
+                <input type="text" name="club" class="form-control" placeholder="Club" value="{{ club_filtro or '' }}">
+            </div>
+            <div class="col-md-1">
+                <select name="nivel" class="form-control">
+                    <option value="" {% if not nivel_filtro %}selected{% endif %}>Nivel</option>
+                    <option value="1" {% if nivel_filtro == '1' %}selected{% endif %}>1</option>
+                    <option value="2" {% if nivel_filtro == '2' %}selected{% endif %}>2</option>
+                    <option value="Nacional" {% if nivel_filtro == 'Nacional' %}selected{% endif %}>Nacional</option>
+                </select>
+            </div>
+            <div class="col-md-1">
+                <input type="number" name="temporadas" class="form-control" placeholder="Temp." min="1" max="30" value="{{ temporadas_filtro or '' }}">
+            </div>
+            <div class="col-md-12 mt-2">
+                <button type="submit" class="btn btn-success">Filtrar</button>
+                <a href="{{ url_for('perfil.seguir_usuarios') }}" class="btn btn-secondary ms-2">Limpiar</a>
+            </div>
+        </form>
 
         <table class="table">
             <thead>

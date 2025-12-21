@@ -66,8 +66,30 @@ def config(): #funcion de config
         usuario = Usuario.query.get(g.usuario.alias)
         usuario.nombre = request.form.get('nombre') or usuario.nombre
         usuario.apellido = request.form.get('apellido') or usuario.apellido
-        usuario.nivel = request.form.get('nivel') or usuario.nivel
-        usuario.temporadas = request.form.get('temporadas') or usuario.temporadas
+
+        # validar nivel (solo 1, 2 o Nacional)
+        nivel_form = request.form.get('nivel')
+        if nivel_form:
+            if nivel_form in ['1', '2', 'Nacional']:
+                usuario.nivel = nivel_form
+            else:
+                flash('Nivel no válido. Solo se permiten 1, 2 o Nacional.')
+                return render_template('perfil/configPerfil.html')
+
+        # validar temporadas (entre 1 y 30, sin negativos)
+        temporadas_form = request.form.get('temporadas')
+        if temporadas_form:
+            try:
+                temporadas_int = int(temporadas_form)
+                if 1 <= temporadas_int <= 30:
+                    usuario.temporadas = temporadas_int
+                else:
+                    flash('Las temporadas deben estar entre 1 y 30.')
+                    return render_template('perfil/configPerfil.html')
+            except ValueError:
+                flash('El valor de temporadas no es válido.')
+                return render_template('perfil/configPerfil.html')
+
         usuario.club = request.form.get('club') or usuario.club
         
         # Manejar subida de imagen
@@ -124,17 +146,60 @@ def siguiendo(): #funcion de siguiendo
     siguiendos = Usuario.query.filter(Usuario.alias.in_(aliases)).all() if aliases else []
     return render_template('perfil/siguiendo.html', siguiendos=siguiendos) #return de la funcion
 
-@bp.route('/seguidores/seguir_usuarios') #ruta para listar todos los usuarios para seguir
+@bp.route('/siguiendo/seguir_usuarios') #ruta para listar todos los usuarios para seguir
 @acceso_requerido
 def seguir_usuarios():
-    # todos los usuarios excepto el propio
-    usuarios = Usuario.query.filter(Usuario.alias != g.usuario.alias).all()
+    # filtros desde la query string
+    alias_f = (request.args.get('alias') or '').strip()
+    nombre_f = (request.args.get('nombre') or '').strip()
+    apellido_f = (request.args.get('apellido') or '').strip()
+    email_f = (request.args.get('email') or '').strip()
+    nivel_f = (request.args.get('nivel') or '').strip()
+    temporadas_f = (request.args.get('temporadas') or '').strip()
+
+    # base: todos los usuarios excepto el propio
+    query = Usuario.query.filter(Usuario.alias != g.usuario.alias)
+
+    # campos de texto: contiene
+    if alias_f:
+        query = query.filter(Usuario.alias.ilike(f"%{alias_f}%"))
+    if nombre_f:
+        query = query.filter(Usuario.nombre.ilike(f"%{nombre_f}%"))
+    if apellido_f:
+        query = query.filter(Usuario.apellido.ilike(f"%{apellido_f}%"))
+    if email_f:
+        query = query.filter(Usuario.email.ilike(f"%{email_f}%"))
+    if club_f := (request.args.get('club') or '').strip():
+        query = query.filter(Usuario.club.ilike(f"%{club_f}%"))
+
+    # campos numéricos / exactos
+    if nivel_f:
+        query = query.filter(Usuario.nivel == nivel_f)
+    if temporadas_f:
+        try:
+            temporadas_int = int(temporadas_f)
+            query = query.filter(Usuario.temporadas == temporadas_int)
+        except ValueError:
+            pass
+
+    usuarios = query.all()
 
     # obtener el estado de seguimiento del usuario actual respecto a cada usuario listado
     seg_rels = Seguimiento.query.filter_by(seguidor_alias=g.usuario.alias).all()
     estados_seguidos = {rel.seguido_alias: rel.estado for rel in seg_rels}
 
-    return render_template('seguidores/seguir_usuarios.html', usuarios=usuarios, estados_seguidos=estados_seguidos)
+    return render_template(
+        'seguidores/seguir_usuarios.html',
+        usuarios=usuarios,
+        estados_seguidos=estados_seguidos,
+        alias_filtro=alias_f,
+        nombre_filtro=nombre_f,
+        apellido_filtro=apellido_f,
+        email_filtro=email_f,
+        nivel_filtro=nivel_f,
+        temporadas_filtro=temporadas_f,
+        club_filtro=club_f if 'club_f' in locals() else ''
+    )
 
 
 @bp.route('/seguir/<alias>', methods=['POST']) #ruta para seguir a un usuario

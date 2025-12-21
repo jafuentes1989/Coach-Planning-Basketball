@@ -32,6 +32,33 @@ def perfil(): #funcion de listado
         num_solicitudes=num_solicitudes
     ) #return de la funcion
 
+@bp.route('/ver/<alias>') #ruta para ver el perfil de otro usuario
+@acceso_requerido
+def ver_perfil(alias):
+    # si es el propio usuario, reutilizamos la vista principal
+    if alias == g.usuario.alias:
+        return redirect(url_for('perfil.perfil'))
+
+    usuario = Usuario.query.get_or_404(alias)
+
+    num_ejercicios = Ejercicio.query.filter_by(autor=alias).count()
+    num_sesiones = Sesion.query.filter_by(autor=alias).count()
+    num_planning = Planning.query.filter_by(autor=alias).count()
+    num_seguidores = Seguimiento.query.filter_by(seguido_alias=alias, estado='aceptado').count()
+    num_siguiendo = Seguimiento.query.filter_by(seguidor_alias=alias, estado='aceptado').count()
+    num_solicitudes = Seguimiento.query.filter_by(seguido_alias=alias, estado='pendiente').count()
+
+    return render_template(
+        'perfil/perfil.html',
+        usuario=usuario,
+        num_ejercicios=num_ejercicios,
+        num_sesiones=num_sesiones,
+        num_planning=num_planning,
+        num_seguidores=num_seguidores,
+        num_siguiendo=num_siguiendo,
+        num_solicitudes=num_solicitudes
+    )
+
 @bp.route('/configPerfil', methods=['GET', 'POST']) #ruta para configurar perfil de usuario
 @acceso_requerido
 def config(): #funcion de config

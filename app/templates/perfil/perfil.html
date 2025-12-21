@@ -9,13 +9,19 @@
         <div class="col-md-3">
             <div class="card">
                 <div class="card-body text-center">
-                    <label for="profile-image-input" style="cursor: pointer;">
+                    {% if usuario.alias == g.usuario.alias %}
+                        <label for="profile-image-input" style="cursor: pointer;">
+                            <img id="profile-image" alt="Foto de perfil" src="{{ usuario.profile_image or '' }}" class="rounded-circle mb-3" style="width: 250px;">
+                        </label>
+                        <input type="file" id="profile-image-input" accept="image/*" style="display: none;" onchange="previewImage(event)">
+                    {% else %}
                         <img id="profile-image" alt="Foto de perfil" src="{{ usuario.profile_image or '' }}" class="rounded-circle mb-3" style="width: 250px;">
-                    </label>
-                    <input type="file" id="profile-image-input" accept="image/*" style="display: none;" onchange="previewImage(event)">
+                    {% endif %}
                     <h5 class="card-title">{{ usuario.alias }}</h5>
                     <p class="card-text">{{ usuario.email }}</p>
-                    <a href="{{ url_for('perfil.config') }}" class="btn btn-primary">Editar perfil</a>
+                    {% if usuario.alias == g.usuario.alias %}
+                        <a href="{{ url_for('perfil.config') }}" class="btn btn-primary">Editar perfil</a>
+                    {% endif %}
                 </div>
             </div>
         </div>

@@ -49,7 +49,7 @@
                         <p>{{ seguidor.club }}</p>
                     </td>
                     <td>
-                        <a href="" class="btn btn-info btn-sm">Ver</a>
+                        <a href="{{ url_for('perfil.ver_perfil', alias=seguidor.alias) }}" class="btn btn-info btn-sm">Ver</a>
                     </td>
                     <td>
                         <a href="" class="btn btn-danger">Eliminar</a>

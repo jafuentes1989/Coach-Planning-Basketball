@@ -4,6 +4,21 @@
 {% block title %}Perfil{% endblock %}
 
 {% block content %}
+<style>
+    .nivel-dot {
+        display: inline-block;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        margin: 0 2px;
+    }
+    .nivel-dot-activo {
+        background-color: #0d6efd; /* azul bootstrap primary */
+    }
+    .nivel-dot-inactivo {
+        border: 2px solid #6c757d; /* gris bootstrap secondary */
+    }
+</style>
 <div class="container mt-4">
     <div class="row">
         <div class="col-md-3">
@@ -37,21 +52,21 @@
                         <div class="card-body text-center">
                             <h5 class="card-title text-danger">Nivel</h5>    
                             {% if usuario.nivel == '1' %}
-                                <span class="text-primary" style="font-size: 24px;">●</span>
-                                <span class="text-muted" style="font-size: 24px;">○</span>
-                                <span class="text-muted" style="font-size: 24px;">○</span>
+                                <span class="nivel-dot nivel-dot-activo"></span>
+                                <span class="nivel-dot nivel-dot-inactivo"></span>
+                                <span class="nivel-dot nivel-dot-inactivo"></span>
                             {% elif usuario.nivel == '2' %}
-                                <span class="text-primary" style="font-size: 24px;">●</span>
-                                <span class="text-primary" style="font-size: 24px;">●</span>
-                                <span class="text-muted" style="font-size: 24px;">○</span>
+                                <span class="nivel-dot nivel-dot-activo"></span>
+                                <span class="nivel-dot nivel-dot-activo"></span>
+                                <span class="nivel-dot nivel-dot-inactivo"></span>
                             {% elif usuario.nivel == 'Nacional' %}
-                                <span class="text-primary" style="font-size: 24px;">●</span>
-                                <span class="text-primary" style="font-size: 24px;">●</span>
-                                <span class="text-primary" style="font-size: 24px;">●</span>
+                                <span class="nivel-dot nivel-dot-activo"></span>
+                                <span class="nivel-dot nivel-dot-activo"></span>
+                                <span class="nivel-dot nivel-dot-activo"></span>
                             {% else %}
-                                <span class="text-muted" style="font-size: 24px;">○</span>
-                                <span class="text-muted" style="font-size: 24px;">○</span>
-                                <span class="text-muted" style="font-size: 24px;">○</span>
+                                <span class="nivel-dot nivel-dot-inactivo"></span>
+                                <span class="nivel-dot nivel-dot-inactivo"></span>
+                                <span class="nivel-dot nivel-dot-inactivo"></span>
                             {% endif %}
                             <br>
                             <p><strong>{{ usuario.nivel }}</strong></p>

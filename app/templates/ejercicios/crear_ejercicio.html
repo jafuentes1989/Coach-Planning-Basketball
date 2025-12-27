@@ -4,14 +4,40 @@
 {% block content %}
     <section class="container-sm">
         <h3 class="text-center mt-3 mb-3">{% block title %}Crear Ejercicio{% endblock %}</h3>
-        <form action="" method="post">
+        <form action="" method="post" enctype="multipart/form-data">
             <div class="mb-3">
                 <label for="titulo" class="form-label">Título</label>
                 <input type="text" class="form-control" id="titulo" name="titulo" required>
             </div>
             <div class="mb-3">
-                <label for="imagen" class="form-label">Imagen (URL)</label>
-                <input type="text" class="form-control" id="imagen" name="imagen">
+                <label for="fundamento_trabajado" class="form-label">Fundamento trabajado</label>
+                <select class="form-select" id="fundamento_trabajado" name="fundamento_trabajado" required>
+                    <option value="" disabled selected>Selecciona un fundamento</option>
+                    <option value="resistencia">Resistencia</option>
+                    <option value="velocidad">Velocidad</option>
+                    <option value="fuerza">Fuerza</option>
+                    <option value="potencia">Potencia</option>
+                    <option value="agilidad">Agilidad</option>
+                    <option value="bote">Bote</option>
+                    <option value="finalizaciones">Finalizaciones</option>
+                    <option value="tiro">Tiro</option>
+                    <option value="pase">Pase</option>
+                    <option value="transiciones">Transiciones</option>
+                    <option value="rebote">Rebote</option>
+                    <option value="bloqueos">Bloqueos</option>
+                    <option value="defensa">Defensa</option>
+                    <option value="sistemas">Sistemas</option>
+                    <option value="miniaturas">Miniaturas</option>
+                    <option value="partido">Partido</option>
+                    <option value="continuo">Continuo</option>
+                    <option value="balance">Balance</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Imágenes (hasta 3)</label>
+                <input type="file" class="form-control mb-1" id="imagen1" name="imagen1">
+                <input type="file" class="form-control mb-1" id="imagen2" name="imagen2">
+                <input type="file" class="form-control" id="imagen3" name="imagen3">
             </div>
             <div class="mb-3">
                 <label for="descripcion" class="form-label">Descripción</label>
@@ -24,6 +50,12 @@
             <div class="mb-3">
                 <label for="duracion" class="form-label">Duración (minutos)</label>
                 <input type="number" class="form-control" id="duracion" name="duracion" required>
+            </div>
+            <div class="form-check mb-3">
+                <input class="form-check-input" type="checkbox" id="confidencial" name="confidencial">
+                <label class="form-check-label" for="confidencial">
+                    Confidencial
+                </label>
             </div>
             <div class="text-center">
                 <input type="submit" class="btn btn-primary" value="guardar">

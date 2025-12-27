@@ -1,3 +1,7 @@
+"""Configuración principal de la aplicación Flask."""
+
+import os
+
 #archivo que indica que app es el paquete de la APP
 from flask import Flask, render_template 
 #importamos la clase Flask
@@ -17,7 +21,8 @@ def create_app(): #funcion para crear la APP
     app.config.from_mapping( #mapeo
         DEBUG=True, #debug activado
         SECRET_KEY='dev',#key para DB
-        SQLALCHEMY_DATABASE_URI="sqlite:///cpb.db"#ruta de la base de datos
+        SQLALCHEMY_DATABASE_URI="sqlite:///cpb.db",#ruta de la base de datos
+        UPLOAD_FOLDER=os.path.join(app.root_path, 'static', 'uploads') #carpeta para subir imágenes
     )
 
     db.init_app(app) #inicializamos la base de datos con la APP

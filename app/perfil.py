@@ -113,9 +113,56 @@ def config(): #funcion de config
 @bp.route('/ejercicios') #ruta para listado ejercicios
 @acceso_requerido #decorador para requerir acceso
 def ejercicios(): #funcion de listado ejercicios
-    # obtener ejercicios del autor logueado y pasarlos a la plantilla
-    ejercicios = Ejercicio.query.filter_by(autor=g.usuario.alias).all()
-    return render_template('perfil/ejercicios.html', ejercicios=ejercicios)
+    # filtros desde la query string
+    autor_f = (request.args.get('autor') or '').strip()
+    fundamento_f = (request.args.get('fundamento_trabajado') or '').strip()
+    descripcion_f = (request.args.get('descripcion') or '').strip()
+    jugadores_f = (request.args.get('jugadores') or '').strip()
+    duracion_f = (request.args.get('duracion') or '').strip()
+
+    # base: por defecto solo ejercicios del usuario logueado
+    query = Ejercicio.query
+    if not autor_f:
+        query = query.filter(Ejercicio.autor == g.usuario.alias)
+    else:
+        # autor contiene lo buscado (puede incluir otros autores)
+        query = query.filter(Ejercicio.autor.ilike(f"%{autor_f}%"))
+
+    # fundamento: valor exacto seleccionado en el select
+    if fundamento_f:
+        query = query.filter(Ejercicio.fundamento_trabajado == fundamento_f)
+
+    # descripcion: contiene el texto introducido
+    if descripcion_f:
+        query = query.filter(Ejercicio.descripcion.ilike(f"%{descripcion_f}%"))
+
+    # numero de jugadores: coincidencia exacta si es un número válido
+    if jugadores_f:
+        try:
+            jugadores_int = int(jugadores_f)
+            query = query.filter(Ejercicio.jugadores == jugadores_int)
+        except ValueError:
+            pass
+
+    # duracion: coincidencia exacta si es un número válido
+    if duracion_f:
+        try:
+            duracion_int = int(duracion_f)
+            query = query.filter(Ejercicio.duracion == duracion_int)
+        except ValueError:
+            pass
+
+    ejercicios = query.all()
+
+    return render_template(
+        'perfil/ejercicios.html',
+        ejercicios=ejercicios,
+        autor_filtro=autor_f,
+        fundamento_filtro=fundamento_f,
+        descripcion_filtro=descripcion_f,
+        jugadores_filtro=jugadores_f,
+        duracion_filtro=duracion_f
+    )
 
 @bp.route('/sesiones') #ruta para listado sesiones
 @acceso_requerido #protegemos la vista con el decorador acceso_requerido

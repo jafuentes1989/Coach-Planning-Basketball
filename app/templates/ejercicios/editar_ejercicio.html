@@ -4,14 +4,48 @@
 {% block content %}
     <section class="container-sm">
         <h3 class="text-center mt-3 mb-3">{% block title %}Editar Ejercicio{% endblock %}</h3>
-        <form action="" method="post">
+        <form action="" method="post" enctype="multipart/form-data">
             <div class="mb-3">
                 <label for="titulo" class="form-label">Título</label>
                 <input type="text" class="form-control" id="titulo" name="titulo" required value="{{ ejercicio.titulo }}">
             </div>
             <div class="mb-3">
-                <label for="imagen" class="form-label">Imagen (URL)</label>
-                <input type="text" class="form-control" id="imagen" name="imagen" value="{{ ejercicio.imagen_url }}">
+                <label for="fundamento_trabajado" class="form-label">Fundamento trabajado</label>
+                <select class="form-select" id="fundamento_trabajado" name="fundamento_trabajado" required>
+                    <option value="resistencia" {% if ejercicio.fundamento_trabajado == 'resistencia' %}selected{% endif %}>Resistencia</option>
+                    <option value="velocidad" {% if ejercicio.fundamento_trabajado == 'velocidad' %}selected{% endif %}>Velocidad</option>
+                    <option value="fuerza" {% if ejercicio.fundamento_trabajado == 'fuerza' %}selected{% endif %}>Fuerza</option>
+                    <option value="potencia" {% if ejercicio.fundamento_trabajado == 'potencia' %}selected{% endif %}>Potencia</option>
+                    <option value="agilidad" {% if ejercicio.fundamento_trabajado == 'agilidad' %}selected{% endif %}>Agilidad</option>
+                    <option value="bote" {% if ejercicio.fundamento_trabajado == 'bote' %}selected{% endif %}>Bote</option>
+                    <option value="finalizaciones" {% if ejercicio.fundamento_trabajado == 'finalizaciones' %}selected{% endif %}>Finalizaciones</option>
+                    <option value="tiro" {% if ejercicio.fundamento_trabajado == 'tiro' %}selected{% endif %}>Tiro</option>
+                    <option value="pase" {% if ejercicio.fundamento_trabajado == 'pase' %}selected{% endif %}>Pase</option>
+                    <option value="transiciones" {% if ejercicio.fundamento_trabajado == 'transiciones' %}selected{% endif %}>Transiciones</option>
+                    <option value="rebote" {% if ejercicio.fundamento_trabajado == 'rebote' %}selected{% endif %}>Rebote</option>
+                    <option value="bloqueos" {% if ejercicio.fundamento_trabajado == 'bloqueos' %}selected{% endif %}>Bloqueos</option>
+                    <option value="defensa" {% if ejercicio.fundamento_trabajado == 'defensa' %}selected{% endif %}>Defensa</option>
+                    <option value="sistemas" {% if ejercicio.fundamento_trabajado == 'sistemas' %}selected{% endif %}>Sistemas</option>
+                    <option value="miniaturas" {% if ejercicio.fundamento_trabajado == 'miniaturas' %}selected{% endif %}>Miniaturas</option>
+                    <option value="partido" {% if ejercicio.fundamento_trabajado == 'partido' %}selected{% endif %}>Partido</option>
+                    <option value="continuo" {% if ejercicio.fundamento_trabajado == 'continuo' %}selected{% endif %}>Continuo</option>
+                    <option value="balance" {% if ejercicio.fundamento_trabajado == 'balance' %}selected{% endif %}>Balance</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Imágenes (hasta 3)</label>
+                <input type="file" class="form-control mb-1" id="imagen1" name="imagen1">
+                {% if ejercicio.imagen_url %}
+                <div class="form-text">Imagen 1 actual: {{ ejercicio.imagen_url }}</div>
+                {% endif %}
+                <input type="file" class="form-control mb-1" id="imagen2" name="imagen2">
+                {% if ejercicio.imagen_url_2 %}
+                <div class="form-text">Imagen 2 actual: {{ ejercicio.imagen_url_2 }}</div>
+                {% endif %}
+                <input type="file" class="form-control" id="imagen3" name="imagen3">
+                {% if ejercicio.imagen_url_3 %}
+                <div class="form-text">Imagen 3 actual: {{ ejercicio.imagen_url_3 }}</div>
+                {% endif %}
             </div>
             <div class="mb-3">
                 <label for="descripcion" class="form-label">Descripción</label>
@@ -24,6 +58,12 @@
             <div class="mb-3">
                 <label for="duracion" class="form-label">Duración (minutos)</label>
                 <input type="number" class="form-control" id="duracion" name="duracion" required value="{{ ejercicio.duracion }}">
+            </div>
+            <div class="form-check mb-3">
+                <input class="form-check-input" type="checkbox" id="confidencial" name="confidencial" {% if ejercicio.confidencial %}checked{% endif %}>
+                <label class="form-check-label" for="confidencial">
+                    Confidencial
+                </label>
             </div>
             <div class="text-center">
                 <input type="submit" class="btn btn-primary" value="guardar">

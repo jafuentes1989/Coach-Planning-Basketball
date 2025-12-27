@@ -30,6 +30,7 @@ def crear_planning(): #funcion para crear una nueva planning
         titulo= request.form['titulo'] #obtenemos el titulo del formulario
         descripcion = request.form['descripcion'] #obtenemos la descripcion del formulario
         num_sesiones = request.form['num_sesiones'] #obtenemos el numero de sesiones del formulario
+        confidencial = request.form.get('confidencial') == 'on' #checkbox confidencial
 
         # convertir fecha string a datetime object
         try:
@@ -43,7 +44,8 @@ def crear_planning(): #funcion para crear una nueva planning
             fecha=fecha,
             titulo=titulo,
             descripcion=descripcion,
-            num_sesiones=num_sesiones
+            num_sesiones=num_sesiones,
+            confidencial=confidencial
         ) 
             
 
@@ -63,6 +65,7 @@ def editar_planning(id): #funcion para editar una planning
         titulo = request.form['titulo'] #obtenemos el titulo del formulario
         descripcion = request.form['descripcion'] #obtenemos la descripcion del formulario
         num_sesiones = request.form['num_sesiones'] #obtenemos el numero de sesiones del formulario
+        confidencial = request.form.get('confidencial') == 'on' #checkbox confidencial
 
         # convertir fecha string a datetime object
         try:
@@ -76,6 +79,7 @@ def editar_planning(id): #funcion para editar una planning
         planning.titulo = titulo
         planning.descripcion = descripcion
         planning.num_sesiones = num_sesiones
+        planning.confidencial = confidencial
 
         db.session.commit() #confirmamos los cambios en la base de datos
         return redirect(url_for('planning.listado_planning')) #redireccionamos al listado de plannings

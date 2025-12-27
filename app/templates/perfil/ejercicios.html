@@ -8,21 +8,64 @@
             <a href="{{ url_for('ejercicios.crear_ejercicio') }}" class="btn btn-success">Nuevo</a>
         </nav>
 
+        <form class="row g-2 mb-3" method="get" action="{{ url_for('perfil.ejercicios') }}">
+            <div class="col-md-2">
+                <input type="text" name="autor" class="form-control" placeholder="Autor" value="{{ autor_filtro or '' }}">
+            </div>
+            <div class="col-md-3">
+                <select name="fundamento_trabajado" class="form-control">
+                    <option value="" {% if not fundamento_filtro %}selected{% endif %}>Fundamento trabajado</option>
+                    <option value="resistencia" {% if fundamento_filtro == 'resistencia' %}selected{% endif %}>Resistencia</option>
+                    <option value="velocidad" {% if fundamento_filtro == 'velocidad' %}selected{% endif %}>Velocidad</option>
+                    <option value="fuerza" {% if fundamento_filtro == 'fuerza' %}selected{% endif %}>Fuerza</option>
+                    <option value="potencia" {% if fundamento_filtro == 'potencia' %}selected{% endif %}>Potencia</option>
+                    <option value="agilidad" {% if fundamento_filtro == 'agilidad' %}selected{% endif %}>Agilidad</option>
+                    <option value="bote" {% if fundamento_filtro == 'bote' %}selected{% endif %}>Bote</option>
+                    <option value="finalizaciones" {% if fundamento_filtro == 'finalizaciones' %}selected{% endif %}>Finalizaciones</option>
+                    <option value="tiro" {% if fundamento_filtro == 'tiro' %}selected{% endif %}>Tiro</option>
+                    <option value="pase" {% if fundamento_filtro == 'pase' %}selected{% endif %}>Pase</option>
+                    <option value="transiciones" {% if fundamento_filtro == 'transiciones' %}selected{% endif %}>Transiciones</option>
+                    <option value="rebote" {% if fundamento_filtro == 'rebote' %}selected{% endif %}>Rebote</option>
+                    <option value="bloqueos" {% if fundamento_filtro == 'bloqueos' %}selected{% endif %}>Bloqueos</option>
+                    <option value="defensa" {% if fundamento_filtro == 'defensa' %}selected{% endif %}>Defensa</option>
+                    <option value="sistemas" {% if fundamento_filtro == 'sistemas' %}selected{% endif %}>Sistemas</option>
+                    <option value="miniaturas" {% if fundamento_filtro == 'miniaturas' %}selected{% endif %}>Miniaturas</option>
+                    <option value="partido" {% if fundamento_filtro == 'partido' %}selected{% endif %}>Partido</option>
+                    <option value="continuo" {% if fundamento_filtro == 'continuo' %}selected{% endif %}>Continuo</option>
+                    <option value="balance" {% if fundamento_filtro == 'balance' %}selected{% endif %}>Balance</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <input type="text" name="descripcion" class="form-control" placeholder="Descripción" value="{{ descripcion_filtro or '' }}">
+            </div>
+            <div class="col-md-2">
+                <input type="number" name="jugadores" class="form-control" placeholder="Jugadores" min="1" value="{{ jugadores_filtro or '' }}">
+            </div>
+            <div class="col-md-2">
+                <input type="number" name="duracion" class="form-control" placeholder="Duración (min)" min="1" value="{{ duracion_filtro or '' }}">
+            </div>
+            <div class="col-md-12 mt-2">
+                <button type="submit" class="btn btn-success">Filtrar</button>
+                <a href="{{ url_for('perfil.ejercicios') }}" class="btn btn-secondary ms-2">Limpiar</a>
+            </div>
+        </form>
+
         <table class="table">
             <thead>
                 <tr>
                     <th class="col">ID</th>
                     <th class="col">autor</th>
                     <th class="col">titulo</th>
-                    <th class="col">imagen</th>
+                    <th class="col">fundamento trabajado</th>
+                    <th class="col">imágenes</th>
                     <th class="col">descripcion</th>
                     <th class="col">numero jugadores</th>
-                    <th class="col">duración</th>
+                    <th class="col">duración (min)</th>
+                    <th class="col">confidencial</th>
                 </tr>
             </thead>
             <tbody>
                 {% for ejercicio in ejercicios | reverse %}
-                {% if g.usuario.alias == ejercicio.autor %}
                 <tr>
                     <td>
                         <p>{{ ejercicio.id }}</p>
@@ -34,7 +77,18 @@
                         <p>{{ ejercicio.titulo }}</p>
                     </td>
                     <td>
-                        <p>{{ ejercicio.imagen_url }}</p>
+                        <p>{{ ejercicio.fundamento_trabajado }}</p>
+                    </td>
+                    <td>
+                        {% if ejercicio.imagen_url %}
+                        <img src="{{ url_for('static', filename=ejercicio.imagen_url) }}" alt="Imagen 1" style="max-width: 80px; max-height: 80px; cursor: pointer;" class="me-1 clickable-image" data-fullsrc="{{ url_for('static', filename=ejercicio.imagen_url) }}">
+                        {% endif %}
+                        {% if ejercicio.imagen_url_2 %}
+                        <img src="{{ url_for('static', filename=ejercicio.imagen_url_2) }}" alt="Imagen 2" style="max-width: 80px; max-height: 80px; cursor: pointer;" class="me-1 clickable-image" data-fullsrc="{{ url_for('static', filename=ejercicio.imagen_url_2) }}">
+                        {% endif %}
+                        {% if ejercicio.imagen_url_3 %}
+                        <img src="{{ url_for('static', filename=ejercicio.imagen_url_3) }}" alt="Imagen 3" style="max-width: 80px; max-height: 80px; cursor: pointer;" class="clickable-image" data-fullsrc="{{ url_for('static', filename=ejercicio.imagen_url_3) }}">
+                        {% endif %}
                     </td>
                     <td>
                         <p>{{ ejercicio.descripcion }}</p>
@@ -46,13 +100,15 @@
                         <p>{{ ejercicio.duracion }}</p>
                     </td>
                     <td>
+                        <p>{{ 'Sí' if ejercicio.confidencial else 'No' }}</p>
+                    </td>
+                    <td>
                         <a href="{{ url_for('ejercicios.editar_ejercicio', id=ejercicio.id) }}" class="btn btn-info btn-sm">Editar</a>
                     </td>
                     <td>
                         <a href="{{ url_for('ejercicios.eliminar_ejercicio', id=ejercicio.id) }}" class="btn btn-danger">Eliminar</a>
                     </td>
                 </tr>
-                {% endif %}
                 {% endfor %}
             </tbody>
         </table>

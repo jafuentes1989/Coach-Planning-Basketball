@@ -30,6 +30,7 @@ def crear_sesion(): #funcion para crear una nueva sesion
         titulo= request.form['titulo'] #obtenemos el titulo del formulario
         descripcion = request.form['descripcion'] #obtenemos la descripcion del formulario
         duracion = request.form['duracion'] #obtenemos la duracion del formulario
+        confidencial = request.form.get('confidencial') == 'on' #checkbox confidencial
 
         # convertir fecha string a datetime object
         try:
@@ -44,7 +45,8 @@ def crear_sesion(): #funcion para crear una nueva sesion
             fecha=fecha,
             titulo=titulo,
             descripcion=descripcion,
-            duracion=duracion
+            duracion=duracion,
+            confidencial=confidencial
         ) 
             
 
@@ -64,6 +66,7 @@ def editar_sesion(id): #funcion para editar una sesion
         titulo = request.form['titulo'] #obtenemos el titulo del formulario
         descripcion = request.form['descripcion'] #obtenemos la descripcion del formulario
         duracion = request.form['duracion'] #obtenemos la duracion del formulario
+        confidencial = request.form.get('confidencial') == 'on' #checkbox confidencial
 
         # convertir fecha string a datetime object
         try:
@@ -77,6 +80,7 @@ def editar_sesion(id): #funcion para editar una sesion
         sesion.titulo = titulo
         sesion.descripcion = descripcion
         sesion.duracion = duracion
+        sesion.confidencial = confidencial
 
         db.session.commit() #confirmamos los cambios en la base de datos
         return redirect(url_for('sesiones.listado_sesiones')) #redireccionamos al listado de sesiones

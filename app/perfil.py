@@ -16,9 +16,39 @@ bp=Blueprint('perfil',__name__, url_prefix='/perfil') #creamos bp como objeto Bl
 @bp.route('/') #ruta para perfil
 @acceso_requerido #decorador para requerir acceso
 def perfil(): #funcion de listado
-    num_ejercicios = Ejercicio.query.filter_by(autor=g.usuario.alias).count()
-    num_sesiones = Sesion.query.filter_by(autor=g.usuario.alias).count()
-    num_planning = Planning.query.filter_by(autor=g.usuario.alias).count()
+    # usuarios a los que sigo (relaciones aceptadas)
+    seg_rels = Seguimiento.query.filter_by(seguidor_alias=g.usuario.alias, estado='aceptado').all()
+    followed_aliases = [rel.seguido_alias for rel in seg_rels]
+
+    # ejercicios: propios + de seguidos no confidenciales (o sin valor)
+    ejercicios_allowed = or_(
+        Ejercicio.autor == g.usuario.alias,
+        and_(
+            Ejercicio.autor.in_(followed_aliases),
+            or_(Ejercicio.confidencial.is_(False), Ejercicio.confidencial.is_(None))
+        ),
+    )
+    num_ejercicios = Ejercicio.query.filter(ejercicios_allowed).count()
+
+    # sesiones: propias + de seguidos no confidenciales (o sin valor)
+    sesiones_allowed = or_(
+        Sesion.autor == g.usuario.alias,
+        and_(
+            Sesion.autor.in_(followed_aliases),
+            or_(Sesion.confidencial.is_(False), Sesion.confidencial.is_(None))
+        ),
+    )
+    num_sesiones = Sesion.query.filter(sesiones_allowed).count()
+
+    # planning: propios + de seguidos no confidenciales (o sin valor)
+    planning_allowed = or_(
+        Planning.autor == g.usuario.alias,
+        and_(
+            Planning.autor.in_(followed_aliases),
+            or_(Planning.confidencial.is_(False), Planning.confidencial.is_(None))
+        ),
+    )
+    num_planning = Planning.query.filter(planning_allowed).count()
     num_seguidores = Seguimiento.query.filter_by(seguido_alias=g.usuario.alias, estado='aceptado').count()
     num_siguiendo = Seguimiento.query.filter_by(seguidor_alias=g.usuario.alias, estado='aceptado').count()
     num_solicitudes = Seguimiento.query.filter_by(seguido_alias=g.usuario.alias, estado='pendiente').count()
@@ -42,9 +72,23 @@ def ver_perfil(alias):
 
     usuario = Usuario.query.get_or_404(alias)
 
-    num_ejercicios = Ejercicio.query.filter_by(autor=alias).count()
-    num_sesiones = Sesion.query.filter_by(autor=alias).count()
-    num_planning = Planning.query.filter_by(autor=alias).count()
+    # Ejercicios del usuario visto; si no es el propio, ocultar confidenciales
+    ejercicios_q = Ejercicio.query.filter_by(autor=alias)
+    if alias != g.usuario.alias:
+        ejercicios_q = ejercicios_q.filter(or_(Ejercicio.confidencial.is_(False), Ejercicio.confidencial.is_(None)))
+    num_ejercicios = ejercicios_q.count()
+
+    # Sesiones del usuario visto
+    sesiones_q = Sesion.query.filter_by(autor=alias)
+    if alias != g.usuario.alias:
+        sesiones_q = sesiones_q.filter(or_(Sesion.confidencial.is_(False), Sesion.confidencial.is_(None)))
+    num_sesiones = sesiones_q.count()
+
+    # Plannings del usuario visto
+    planning_q = Planning.query.filter_by(autor=alias)
+    if alias != g.usuario.alias:
+        planning_q = planning_q.filter(or_(Planning.confidencial.is_(False), Planning.confidencial.is_(None)))
+    num_planning = planning_q.count()
     num_seguidores = Seguimiento.query.filter_by(seguido_alias=alias, estado='aceptado').count()
     num_siguiendo = Seguimiento.query.filter_by(seguidor_alias=alias, estado='aceptado').count()
     num_solicitudes = Seguimiento.query.filter_by(seguido_alias=alias, estado='pendiente').count()
@@ -213,6 +257,59 @@ def planning(): #funcion de planning
 
     planning = Planning.query.filter(allowed_condition).all()
     return render_template('perfil/planning.html', planning=planning) #return de la funcion
+
+
+@bp.route('/ejercicios/<alias>')
+@acceso_requerido
+def ejercicios_usuario(alias):
+    """Listado de ejercicios de un usuario concreto (para ver desde su perfil)."""
+    usuario = Usuario.query.get_or_404(alias)
+
+    query = Ejercicio.query.filter(Ejercicio.autor == alias)
+    # si no es el propio usuario, ocultar confidenciales
+    if alias != g.usuario.alias:
+        query = query.filter(or_(Ejercicio.confidencial.is_(False), Ejercicio.confidencial.is_(None)))
+
+    ejercicios = query.all()
+
+    # reutilizamos la misma plantilla de perfil/ejercicios, sin filtros por otros autores
+    return render_template(
+        'perfil/ejercicios.html',
+        ejercicios=ejercicios,
+        autor_filtro=alias,
+        fundamento_filtro='',
+        descripcion_filtro='',
+        jugadores_filtro='',
+        duracion_filtro='',
+    )
+
+
+@bp.route('/sesiones/<alias>')
+@acceso_requerido
+def sesiones_usuario(alias):
+    """Listado de sesiones de un usuario concreto (para ver desde su perfil)."""
+    Usuario.query.get_or_404(alias)
+
+    query = Sesion.query.filter(Sesion.autor == alias)
+    if alias != g.usuario.alias:
+        query = query.filter(or_(Sesion.confidencial.is_(False), Sesion.confidencial.is_(None)))
+
+    sesiones = query.all()
+    return render_template('perfil/sesiones.html', sesiones=sesiones)
+
+
+@bp.route('/planning/<alias>')
+@acceso_requerido
+def planning_usuario(alias):
+    """Listado de plannings de un usuario concreto (para ver desde su perfil)."""
+    Usuario.query.get_or_404(alias)
+
+    query = Planning.query.filter(Planning.autor == alias)
+    if alias != g.usuario.alias:
+        query = query.filter(or_(Planning.confidencial.is_(False), Planning.confidencial.is_(None)))
+
+    planning = query.all()
+    return render_template('perfil/planning.html', planning=planning)
 
 @bp.route('/seguidores') #ruta para listados de usuarios que te siguen
 @acceso_requerido

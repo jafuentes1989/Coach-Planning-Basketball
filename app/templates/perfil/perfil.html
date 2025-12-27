@@ -150,7 +150,11 @@
                             </div>
                             <h5 class="card-title text-danger">Ejercicios</h5>
                             <br>
-                            <a href="{{ url_for('perfil.ejercicios') }}" class="btn btn-primary">Ver</a>
+                            {% if usuario.alias == g.usuario.alias %}
+                                <a href="{{ url_for('perfil.ejercicios') }}" class="btn btn-primary">Ver</a>
+                            {% else %}
+                                <a href="{{ url_for('perfil.ejercicios_usuario', alias=usuario.alias) }}" class="btn btn-primary">Ver</a>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
@@ -163,7 +167,11 @@
                             </div>
                             <h5 class="card-title text-danger">Sesiones</h5>
                             <br>
-                            <a href="{{ url_for('perfil.sesiones') }}" class="btn btn-primary">Ver</a>
+                            {% if usuario.alias == g.usuario.alias %}
+                                <a href="{{ url_for('perfil.sesiones') }}" class="btn btn-primary">Ver</a>
+                            {% else %}
+                                <a href="{{ url_for('perfil.sesiones_usuario', alias=usuario.alias) }}" class="btn btn-primary">Ver</a>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
@@ -176,7 +184,11 @@
                             </div>
                             <h5 class="card-title text-danger">Planning</h5>
                             <br>
-                            <a href="{{ url_for('perfil.planning') }}" class="btn btn-primary">Ver</a>
+                            {% if usuario.alias == g.usuario.alias %}
+                                <a href="{{ url_for('perfil.planning') }}" class="btn btn-primary">Ver</a>
+                            {% else %}
+                                <a href="{{ url_for('perfil.planning_usuario', alias=usuario.alias) }}" class="btn btn-primary">Ver</a>
+                            {% endif %}
                         </div>
                     </div>
                 </div>

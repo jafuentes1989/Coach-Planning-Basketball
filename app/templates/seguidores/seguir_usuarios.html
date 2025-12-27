@@ -83,14 +83,17 @@
                         {% set estado = estados_seguidos.get(usuario.alias) %}
                         {% if estado is none %}
                             {# No existe relación: se puede enviar solicitud #}
+                            <a href="{{ url_for('perfil.ver_perfil', alias=usuario.alias) }}" class="btn btn-secondary btn-sm me-1">Ver</a>
                             <form action="{{ url_for('perfil.seguir', alias=usuario.alias) }}" method="post" class="d-inline">
                                 <button type="submit" class="btn btn-info btn-sm">Solicitar</button>
                             </form>
                         {% elif estado == 'pendiente' %}
                             {# Solicitud enviada pero aún no aceptada #}
+                            <a href="{{ url_for('perfil.ver_perfil', alias=usuario.alias) }}" class="btn btn-secondary btn-sm me-1">Ver</a>
                             <button type="button" class="btn btn-secondary btn-sm" disabled>Solicitado</button>
                         {% elif estado == 'aceptado' %}
                             {# Relación aceptada: permitir eliminar (dejar de seguir) #}
+                            <a href="{{ url_for('perfil.ver_perfil', alias=usuario.alias) }}" class="btn btn-secondary btn-sm me-1">Ver</a>
                             <form action="{{ url_for('perfil.dejar_de_seguir', alias=usuario.alias) }}" method="post" class="d-inline">
                                 <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
                             </form>

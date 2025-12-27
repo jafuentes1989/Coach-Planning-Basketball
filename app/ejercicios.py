@@ -3,7 +3,7 @@
 import os
 
 #archivo que tiene el codigo relacionado con los ejercicios
-from flask import Blueprint, render_template, request, redirect, url_for, g, current_app
+from flask import Blueprint, render_template, request, redirect, url_for, g, current_app, abort
 #importamos Blueprint para crear un blueprint, 
 #importamos render_template para renderizar las vistas creadas en HTML
 #importamos request para manejar las solicitudes HTTP
@@ -85,6 +85,10 @@ def obtener_ejercicio(id): #funcion para obtener un ejercicio por su id
 def editar_ejercicio(id): #funcion para editar un ejercicio
     ejercicio=obtener_ejercicio(id) #obtenemos el ejercicio por su id
 
+    # solo el autor puede editar su ejercicio
+    if ejercicio.autor != g.usuario.alias:
+        abort(403)
+
     if request.method == 'POST': #si el metodo de la solicitud es POST
         ejercicio.titulo = request.form['titulo'] #actualizamos el titulo del ejercicio
         ejercicio.fundamento_trabajado = request.form['fundamento_trabajado'] #actualizamos el fundamento trabajado del ejercicio
@@ -120,6 +124,10 @@ def editar_ejercicio(id): #funcion para editar un ejercicio
 @acceso_requerido #protegemos la vista con el decorador acceso_requerido
 def eliminar_ejercicio(id): #funcion para eliminar un ejercicio
     ejercicio=obtener_ejercicio(id) #obtenemos el ejercicio por su id
+
+    # solo el autor puede eliminar su ejercicio
+    if ejercicio.autor != g.usuario.alias:
+        abort(403)
 
     db.session.delete(ejercicio) #eliminamos el ejercicio de la sesión de la base de datos
     db.session.commit() #confirmamos los cambios en la base de datos

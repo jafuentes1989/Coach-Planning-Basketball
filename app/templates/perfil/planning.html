@@ -23,7 +23,6 @@
             </thead>
             <tbody>
                 {% for planning in planning | reverse %}
-                {% if g.usuario.alias == planning.autor %}
                 <!--FALTARIA EL ID DEL EJERCICIO-->
                 <tr>
                     <td>
@@ -57,7 +56,6 @@
                         <a href="{{ url_for('planning.eliminar_planning', id=planning.id) }}" class="btn btn-danger">Eliminar</a>
                     </td>
                 </tr>
-                {% endif %}
                 {% endfor %}
             </tbody>
         </table>

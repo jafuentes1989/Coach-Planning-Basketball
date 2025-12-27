@@ -8,6 +8,7 @@ from .models import Ejercicio, Sesion, Planning, Usuario, Seguimiento
 from app import db
 import os
 from werkzeug.utils import secure_filename
+from sqlalchemy import or_, and_
 #importamos el decorador acceso_requerido desde auth.py
 
 bp=Blueprint('perfil',__name__, url_prefix='/perfil') #creamos bp como objeto Blueprint
@@ -120,12 +121,23 @@ def ejercicios(): #funcion de listado ejercicios
     jugadores_f = (request.args.get('jugadores') or '').strip()
     duracion_f = (request.args.get('duracion') or '').strip()
 
-    # base: por defecto solo ejercicios del usuario logueado
-    query = Ejercicio.query
-    if not autor_f:
-        query = query.filter(Ejercicio.autor == g.usuario.alias)
-    else:
-        # autor contiene lo buscado (puede incluir otros autores)
+    # obtener usuarios a los que sigo (relaciones aceptadas)
+    seg_rels = Seguimiento.query.filter_by(seguidor_alias=g.usuario.alias, estado='aceptado').all()
+    followed_aliases = [rel.seguido_alias for rel in seg_rels]
+
+    # condición base: siempre mis ejercicios, y de usuarios seguidos solo los no confidenciales
+    allowed_condition = or_(
+        Ejercicio.autor == g.usuario.alias,
+        and_(
+            Ejercicio.autor.in_(followed_aliases),
+            or_(Ejercicio.confidencial.is_(False), Ejercicio.confidencial.is_(None))
+        ),
+    )
+
+    query = Ejercicio.query.filter(allowed_condition)
+
+    # autor contiene lo buscado (puede incluir otros autores dentro del conjunto permitido)
+    if autor_f:
         query = query.filter(Ejercicio.autor.ilike(f"%{autor_f}%"))
 
     # fundamento: valor exacto seleccionado en el select
@@ -167,13 +179,39 @@ def ejercicios(): #funcion de listado ejercicios
 @bp.route('/sesiones') #ruta para listado sesiones
 @acceso_requerido #protegemos la vista con el decorador acceso_requerido
 def sesiones(): #funcion de listado sesiones
-    sesiones = Sesion.query.filter_by(autor=g.usuario.alias).all()
+    # usuarios a los que sigo
+    seg_rels = Seguimiento.query.filter_by(seguidor_alias=g.usuario.alias, estado='aceptado').all()
+    followed_aliases = [rel.seguido_alias for rel in seg_rels]
+
+    # siempre mis sesiones; de seguidos solo las no confidenciales
+    allowed_condition = or_(
+        Sesion.autor == g.usuario.alias,
+        and_(
+            Sesion.autor.in_(followed_aliases),
+            or_(Sesion.confidencial.is_(False), Sesion.confidencial.is_(None))
+        ),
+    )
+
+    sesiones = Sesion.query.filter(allowed_condition).all()
     return render_template('perfil/sesiones.html', sesiones=sesiones) #return de la funcion
 
 @bp.route('/planning') #ruta para configurar planning
 @acceso_requerido #protegemos la vista con el decorador acceso_requerido
 def planning(): #funcion de planning
-    planning = Planning.query.filter_by(autor=g.usuario.alias).all()
+    # usuarios a los que sigo
+    seg_rels = Seguimiento.query.filter_by(seguidor_alias=g.usuario.alias, estado='aceptado').all()
+    followed_aliases = [rel.seguido_alias for rel in seg_rels]
+
+    # siempre mis plannings; de seguidos solo los no confidenciales
+    allowed_condition = or_(
+        Planning.autor == g.usuario.alias,
+        and_(
+            Planning.autor.in_(followed_aliases),
+            or_(Planning.confidencial.is_(False), Planning.confidencial.is_(None))
+        ),
+    )
+
+    planning = Planning.query.filter(allowed_condition).all()
     return render_template('perfil/planning.html', planning=planning) #return de la funcion
 
 @bp.route('/seguidores') #ruta para listados de usuarios que te siguen

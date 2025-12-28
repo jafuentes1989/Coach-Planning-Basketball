@@ -21,9 +21,9 @@ bp=Blueprint('ejercicios', __name__, url_prefix='/ejercicios') #creamos el bluep
 @bp.route('/listado') #ruta principal del blueprint ejercicios
 @acceso_requerido #protegemos la vista con el decorador acceso_requerido
 def listado_ejercicios(): #funcion para listar los ejercicios
-    #ejercicios=Ejercicio.query.filter_by(visibilidad=True).all() #consultamos todos los ejercicios visibles en la base de datos
-    ejercicios=Ejercicio.query.all() #consultamos todos los ejercicios en la base de datos
-    return render_template('perfil/ejercicios.html', ejercicios=ejercicios) #renderizamos la plantilla ejercicios.html y pasamos los ejercicios como contexto
+    # Redirigimos al listado filtrado de perfil, que ya muestra
+    # solo los ejercicios del usuario actual y de los seguidos.
+    return redirect(url_for('perfil.ejercicios'))
 
 @bp.route('/crear_ejercicio', methods=['GET', 'POST']) #ruta para crear un nuevo ejercicio
 @acceso_requerido #protegemos la vista con el decorador acceso_requerido
@@ -70,7 +70,7 @@ def crear_ejercicio(): #funcion para crear un nuevo ejercicio
 
         db.session.add(nuevo_ejercicio) #añadimos el nuevo ejercicio a la sesión de la base de datos
         db.session.commit() #confirmamos los cambios en la base de datos
-        return redirect(url_for('ejercicios.listado_ejercicios')) #redireccionamos al listado de ejercicios
+        return redirect(url_for('perfil.ejercicios')) #redireccionamos al listado filtrado de ejercicios
     
     return render_template('ejercicios/crear_ejercicio.html') #renderizamos la plantilla crear_ejercicio.html
 

@@ -22,6 +22,9 @@
                     <option value="agilidad" {% if fundamento_filtro == 'agilidad' %}selected{% endif %}>Agilidad</option>
                     <option value="bote" {% if fundamento_filtro == 'bote' %}selected{% endif %}>Bote</option>
                     <option value="finalizaciones" {% if fundamento_filtro == 'finalizaciones' %}selected{% endif %}>Finalizaciones</option>
+                    {% if mostrar_ver %}
+                    <th class="col">Ver</th>
+                    {% endif %}
                     <option value="tiro" {% if fundamento_filtro == 'tiro' %}selected{% endif %}>Tiro</option>
                     <option value="pase" {% if fundamento_filtro == 'pase' %}selected{% endif %}>Pase</option>
                     <option value="transiciones" {% if fundamento_filtro == 'transiciones' %}selected{% endif %}>Transiciones</option>
@@ -102,6 +105,24 @@
                     <td>
                         <p>{{ 'Sí' if ejercicio.confidencial else 'No' }}</p>
                     </td>
+                    {% if mostrar_ver %}
+                    <td>
+                        <button type="button"
+                                class="btn btn-primary btn-sm btn-ver-ejercicio"
+                                data-bs-toggle="modal"
+                                data-bs-target="#detalleEjercicioModal"
+                                data-titulo="{{ ejercicio.titulo }}"
+                                data-fundamento="{{ ejercicio.fundamento_trabajado }}"
+                                data-jugadores="{{ ejercicio.jugadores }}"
+                                data-duracion="{{ ejercicio.duracion }}"
+                                data-descripcion="{{ ejercicio.descripcion }}"
+                                data-imagen1="{% if ejercicio.imagen_url %}{{ url_for('static', filename=ejercicio.imagen_url) }}{% endif %}"
+                                data-imagen2="{% if ejercicio.imagen_url_2 %}{{ url_for('static', filename=ejercicio.imagen_url_2) }}{% endif %}"
+                                data-imagen3="{% if ejercicio.imagen_url_3 %}{{ url_for('static', filename=ejercicio.imagen_url_3) }}{% endif %}">
+                            Ver
+                        </button>
+                    </td>
+                    {% endif %}
                     <td>
                         {% if ejercicio.autor == g.usuario.alias %}
                         <a href="{{ url_for('ejercicios.editar_ejercicio', id=ejercicio.id) }}" class="btn btn-info btn-sm">Editar</a>
@@ -116,5 +137,68 @@
                 {% endfor %}
             </tbody>
         </table>
+
+        <!-- Modal detalle ejercicio -->
+        <div class="modal fade" id="detalleEjercicioModal" tabindex="-1" aria-labelledby="detalleEjercicioModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="detalleEjercicioModalLabel">Detalle ejercicio</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <h4 id="detalleTitulo"></h4>
+                        <p class="mb-2" id="detalleInfoLinea"></p>
+                        <div class="mb-3" id="detalleImagenes" style="display: flex; gap: 0.5rem; flex-wrap: wrap;"></div>
+                        <p id="detalleDescripcion" class="mt-2"></p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            document.addEventListener('click', function (event) {
+                const button = event.target.closest('.btn-ver-ejercicio');
+                if (!button) return;
+
+                const titulo = button.getAttribute('data-titulo') || '';
+                const fundamento = button.getAttribute('data-fundamento') || '';
+                const jugadores = button.getAttribute('data-jugadores') || '';
+                const duracion = button.getAttribute('data-duracion') || '';
+                const descripcion = button.getAttribute('data-descripcion') || '';
+                const imagen1 = button.getAttribute('data-imagen1');
+                const imagen2 = button.getAttribute('data-imagen2');
+                const imagen3 = button.getAttribute('data-imagen3');
+
+                const tituloEl = document.getElementById('detalleTitulo');
+                const infoLineaEl = document.getElementById('detalleInfoLinea');
+                const descEl = document.getElementById('detalleDescripcion');
+                const imagenesEl = document.getElementById('detalleImagenes');
+
+                if (tituloEl) tituloEl.textContent = titulo;
+                if (infoLineaEl) infoLineaEl.textContent = `Fundamento: ${fundamento} | Jugadores: ${jugadores} | Duración: ${duracion} min`;
+                if (descEl) descEl.textContent = descripcion;
+
+                if (imagenesEl) {
+                    imagenesEl.innerHTML = '';
+                    [imagen1, imagen2, imagen3].forEach(src => {
+                        if (src) {
+                            const img = document.createElement('img');
+                            img.src = src;
+                            img.alt = 'Imagen ejercicio';
+                            img.style.maxWidth = '120px';
+                            img.style.maxHeight = '120px';
+                            img.style.cursor = 'pointer';
+                            img.classList.add('clickable-image', 'me-1');
+                            img.setAttribute('data-fullsrc', src);
+                            imagenesEl.appendChild(img);
+                        }
+                    });
+                }
+            });
+        </script>
     </section>
 {% endblock %}

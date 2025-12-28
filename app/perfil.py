@@ -217,7 +217,8 @@ def ejercicios(): #funcion de listado ejercicios
         fundamento_filtro=fundamento_f,
         descripcion_filtro=descripcion_f,
         jugadores_filtro=jugadores_f,
-        duracion_filtro=duracion_f
+        duracion_filtro=duracion_f,
+        mostrar_ver=True
     )
 
 @bp.route('/sesiones') #ruta para listado sesiones
@@ -281,6 +282,7 @@ def ejercicios_usuario(alias):
         descripcion_filtro='',
         jugadores_filtro='',
         duracion_filtro='',
+        mostrar_ver=False,
     )
 
 

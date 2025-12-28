@@ -238,7 +238,47 @@ def sesiones(): #funcion de listado sesiones
     )
 
     sesiones = Sesion.query.filter(allowed_condition).all()
-    return render_template('perfil/sesiones.html', sesiones=sesiones) #return de la funcion
+
+    # preparar los ejercicios asociados a cada sesión en el orden definido en ejercicios_ids
+    sesiones_ids_map = {}
+    all_ej_ids = set()
+    for sesion in sesiones:
+        ids_list = []
+        if sesion.ejercicios_ids:
+            for parte in sesion.ejercicios_ids.split(','):
+                parte = (parte or '').strip()
+                if not parte or not parte.isdigit():
+                    continue
+                valor = int(parte)
+                ids_list.append(valor)
+                all_ej_ids.add(valor)
+        sesiones_ids_map[sesion.id] = ids_list
+
+    ejercicios_por_sesion = {}
+    if all_ej_ids:
+        ejercicios_objs = Ejercicio.query.filter(Ejercicio.id.in_(all_ej_ids)).all()
+        ejercicios_by_id = {e.id: e for e in ejercicios_objs}
+
+        for sesion in sesiones:
+            datos_ejercicios = []
+            for ej_id in sesiones_ids_map.get(sesion.id, []):
+                ej = ejercicios_by_id.get(ej_id)
+                if not ej:
+                    continue
+                datos_ejercicios.append({
+                    'id': ej.id,
+                    'titulo': ej.titulo,
+                    'fundamento': ej.fundamento_trabajado,
+                    'jugadores': ej.jugadores,
+                    'duracion': ej.duracion,
+                    'descripcion': ej.descripcion,
+                    'imagen1': url_for('static', filename=ej.imagen_url) if ej.imagen_url else None,
+                    'imagen2': url_for('static', filename=ej.imagen_url_2) if ej.imagen_url_2 else None,
+                    'imagen3': url_for('static', filename=ej.imagen_url_3) if ej.imagen_url_3 else None,
+                })
+            ejercicios_por_sesion[sesion.id] = datos_ejercicios
+
+    return render_template('perfil/sesiones.html', sesiones=sesiones, ejercicios_por_sesion=ejercicios_por_sesion, mostrar_ver=True, mostrar_acciones=True) #return de la funcion
 
 @bp.route('/planning') #ruta para configurar planning
 @acceso_requerido #protegemos la vista con el decorador acceso_requerido
@@ -297,7 +337,47 @@ def sesiones_usuario(alias):
         query = query.filter(or_(Sesion.confidencial.is_(False), Sesion.confidencial.is_(None)))
 
     sesiones = query.all()
-    return render_template('perfil/sesiones.html', sesiones=sesiones)
+
+    # preparar los ejercicios asociados a cada sesión en el orden definido en ejercicios_ids
+    sesiones_ids_map = {}
+    all_ej_ids = set()
+    for sesion in sesiones:
+        ids_list = []
+        if sesion.ejercicios_ids:
+            for parte in sesion.ejercicios_ids.split(','):
+                parte = (parte or '').strip()
+                if not parte or not parte.isdigit():
+                    continue
+                valor = int(parte)
+                ids_list.append(valor)
+                all_ej_ids.add(valor)
+        sesiones_ids_map[sesion.id] = ids_list
+
+    ejercicios_por_sesion = {}
+    if all_ej_ids:
+        ejercicios_objs = Ejercicio.query.filter(Ejercicio.id.in_(all_ej_ids)).all()
+        ejercicios_by_id = {e.id: e for e in ejercicios_objs}
+
+        for sesion in sesiones:
+            datos_ejercicios = []
+            for ej_id in sesiones_ids_map.get(sesion.id, []):
+                ej = ejercicios_by_id.get(ej_id)
+                if not ej:
+                    continue
+                datos_ejercicios.append({
+                    'id': ej.id,
+                    'titulo': ej.titulo,
+                    'fundamento': ej.fundamento_trabajado,
+                    'jugadores': ej.jugadores,
+                    'duracion': ej.duracion,
+                    'descripcion': ej.descripcion,
+                    'imagen1': url_for('static', filename=ej.imagen_url) if ej.imagen_url else None,
+                    'imagen2': url_for('static', filename=ej.imagen_url_2) if ej.imagen_url_2 else None,
+                    'imagen3': url_for('static', filename=ej.imagen_url_3) if ej.imagen_url_3 else None,
+                })
+            ejercicios_por_sesion[sesion.id] = datos_ejercicios
+
+    return render_template('perfil/sesiones.html', sesiones=sesiones, ejercicios_por_sesion=ejercicios_por_sesion, mostrar_ver=False, mostrar_acciones=(alias == g.usuario.alias))
 
 
 @bp.route('/planning/<alias>')

@@ -7,7 +7,7 @@
         <form action="" method="post">
             <div class="mb-3">
                 <label for="fecha" class="form-label">Fecha</label>
-                <input type="date" class="form-control" id="fecha" name="fecha" required value="{{ sesion.fecha }}">
+                <input type="date" class="form-control" id="fecha" name="fecha" required value="{{ sesion.fecha.strftime('%Y-%m-%d') }}">
             </div>
             <div class="mb-3">
                 <label for="titulo" class="form-label">Título</label>
@@ -20,6 +20,21 @@
             <div class="mb-3">
                 <label for="duracion" class="form-label">Duración (minutos)</label>
                 <input type="number" class="form-control" id="duracion" name="duracion" required value="{{ sesion.duracion }}">
+            </div>
+            <div class="mb-3">
+                <label for="tipo_sesion" class="form-label">Tipo de sesión</label>
+                <select class="form-select" id="tipo_sesion" name="tipo_sesion" required>
+                    <option value="fisica" {% if sesion.tipo_sesion == 'fisica' %}selected{% endif %}>Física</option>
+                    <option value="tecnica" {% if sesion.tipo_sesion == 'tecnica' %}selected{% endif %}>Técnica</option>
+                    <option value="tactica" {% if sesion.tipo_sesion == 'tactica' %}selected{% endif %}>Táctica</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="ejercicios_ids" class="form-label">IDs de ejercicios</label>
+                <input type="text" class="form-control" id="ejercicios_ids" name="ejercicios_ids" value="{{ sesion.ejercicios_ids or '' }}" placeholder="Ej: 1, 5, 23" />
+                <div class="form-text">
+                    Introduce hasta 10 IDs de ejercicios separados por comas. Solo se tendrán en cuenta ejercicios que tengas en tu listado (tuyos o de usuarios a los que sigues).
+                </div>
             </div>
             <div class="form-check mb-3">
                 <input class="form-check-input" type="checkbox" id="confidencial" name="confidencial" {% if sesion.confidencial %}checked{% endif %}>

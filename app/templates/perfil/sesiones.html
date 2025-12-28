@@ -16,9 +16,17 @@
                     <th class="col">ID ejercicios</th>
                     <th class="col">fecha</th>
                     <th class="col">titulo</th>
+                    <th class="col">tipo</th>
                     <th class="col">descripcion</th>
                     <th class="col">duración</th>
                     <th class="col">confidencial</th>
+                    {% if mostrar_ver %}
+                    <th class="col">Ver</th>
+                    {% endif %}
+                    {% if mostrar_acciones %}
+                    <th class="col">Editar</th>
+                    <th class="col">Eliminar</th>
+                    {% endif %}
                 </tr>
             </thead>
             <tbody>
@@ -32,13 +40,16 @@
                         <p>{{ sesion.autor }}</p>
                     </td>
                     <td>
-                        <p>{{ sesion.idEjercicio }}</p>
+                        <p>{{ sesion.ejercicios_ids or '' }}</p>
                     </td>
                     <td>
-                        <p>{{ sesion.fecha }}</p>
+                        <p>{{ sesion.fecha.strftime('%Y-%m-%d') }}</p>
                     </td>
                     <td>
                         <p>{{ sesion.titulo }}</p>
+                    </td>
+                    <td>
+                        <p>{{ sesion.tipo_sesion }}</p>
                     </td>
                     <td>
                         <p>{{ sesion.descripcion }}</p>
@@ -49,15 +60,203 @@
                     <td>
                         <p>{{ 'Sí' if sesion.confidencial else 'No' }}</p>
                     </td>
+                    {% if mostrar_ver %}
                     <td>
+                        <button type="button"
+                                class="btn btn-primary btn-sm btn-ver-sesion"
+                                data-bs-toggle="modal"
+                                data-bs-target="#detalleSesionModal"
+                                data-titulo="{{ sesion.titulo }}"
+                                data-duracion="{{ sesion.duracion }}"
+                                data-fecha="{{ sesion.fecha.strftime('%Y-%m-%d') }}"
+                                data-tipo="{{ sesion.tipo_sesion or '' }}"
+                                data-descripcion="{{ sesion.descripcion }}"
+                                data-ejercicios='{{ ejercicios_por_sesion.get(sesion.id, []) | tojson }}'>
+                            Ver
+                        </button>
+                    </td>
+                    {% endif %}
+                    {% if mostrar_acciones %}
+                    <td>
+                        {% if sesion.autor == g.usuario.alias %}
                         <a href="{{ url_for('sesiones.editar_sesion', id=sesion.id) }}" class="btn btn-info btn-sm">Editar</a>
+                        {% endif %}
                     </td>
                     <td>
+                        {% if sesion.autor == g.usuario.alias %}
                         <a href="{{ url_for('sesiones.eliminar_sesion', id=sesion.id) }}" class="btn btn-danger">Eliminar</a>
+                        {% endif %}
                     </td>
+                    {% endif %}
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
+        
+        <!-- Modal detalle sesión -->
+        <div class="modal fade" id="detalleSesionModal" tabindex="-1" aria-labelledby="detalleSesionModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="detalleSesionModalLabel">Detalle sesión</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Primera línea: título (izq), duración (centro), fecha (dcha) -->
+                        <div class="row mb-2">
+                            <div class="col-4 text-start"><strong id="detalleSesionTitulo"></strong></div>
+                            <div class="col-4 text-center" id="detalleSesionDuracion"></div>
+                            <div class="col-4 text-end" id="detalleSesionFecha"></div>
+                        </div>
+                        <!-- Segunda línea: tipo de sesión -->
+                        <p class="mb-3" id="detalleSesionTipo"></p>
+                        <!-- Tercera línea: ejercicios de la sesión -->
+                        <div id="detalleSesionEjercicios" class="mb-3"></div>
+                        <!-- Última línea: descripción -->
+                        <p id="detalleSesionDescripcion" class="mt-2"></p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-primary btn-exportar-sesion">Exportar</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Librerías para generar PDF en el navegador -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+        <script>
+            // Maneja tanto el botón "Ver" como el botón "Exportar" de la sesión
+            document.addEventListener('click', function (event) {
+                const verButton = event.target.closest('.btn-ver-sesion');
+                const exportButton = event.target.closest('.btn-exportar-sesion');
+
+                // Rellenar modal de detalle al pulsar "Ver"
+                if (verButton) {
+                    const titulo = verButton.getAttribute('data-titulo') || '';
+                    const duracion = verButton.getAttribute('data-duracion') || '';
+                    const fecha = verButton.getAttribute('data-fecha') || '';
+                    const descripcion = verButton.getAttribute('data-descripcion') || '';
+                    const tipo = verButton.getAttribute('data-tipo') || '';
+                    const ejerciciosJson = verButton.getAttribute('data-ejercicios') || '[]';
+
+                    let ejercicios = [];
+                    try {
+                        ejercicios = JSON.parse(ejerciciosJson);
+                    } catch (e) {
+                        ejercicios = [];
+                    }
+
+                    const tituloEl = document.getElementById('detalleSesionTitulo');
+                    const duracionEl = document.getElementById('detalleSesionDuracion');
+                    const fechaEl = document.getElementById('detalleSesionFecha');
+                    const tipoEl = document.getElementById('detalleSesionTipo');
+                    const descEl = document.getElementById('detalleSesionDescripcion');
+                    const ejerciciosEl = document.getElementById('detalleSesionEjercicios');
+
+                    if (tituloEl) tituloEl.textContent = titulo;
+                    if (duracionEl) duracionEl.textContent = duracion ? `Duración: ${duracion} min` : '';
+                    if (fechaEl) fechaEl.textContent = fecha;
+                    if (tipoEl) {
+                        const tipoTexto = tipo ? tipo.charAt(0).toUpperCase() + tipo.slice(1) : '';
+                        tipoEl.textContent = tipoTexto ? `Tipo de sesión: ${tipoTexto}` : '';
+                    }
+                    if (descEl) descEl.textContent = descripcion;
+
+                    if (ejerciciosEl) {
+                        ejerciciosEl.innerHTML = '';
+                        ejercicios.forEach(function (ej) {
+                            const card = document.createElement('div');
+                            card.className = 'border rounded p-2 mb-2';
+
+                            const title = document.createElement('h6');
+                            title.textContent = ej.titulo || '';
+                            card.appendChild(title);
+
+                            const info = document.createElement('p');
+                            info.className = 'mb-1';
+                            const fundamento = ej.fundamento || '';
+                            const jugadores = ej.jugadores != null ? ej.jugadores : '';
+                            const dur = ej.duracion != null ? ej.duracion : '';
+                            info.textContent = `Fundamento: ${fundamento} | Jugadores: ${jugadores} | Duración: ${dur} min`;
+                            card.appendChild(info);
+
+                            const imgsWrapper = document.createElement('div');
+                            imgsWrapper.className = 'mb-1 d-flex flex-wrap';
+
+                            [ej.imagen1, ej.imagen2, ej.imagen3].forEach(function (src) {
+                                if (src) {
+                                    const img = document.createElement('img');
+                                    img.src = src;
+                                    img.alt = 'Imagen ejercicio';
+                                    img.style.maxWidth = '120px';
+                                    img.style.maxHeight = '120px';
+                                    img.style.cursor = 'pointer';
+                                    img.classList.add('clickable-image', 'me-1');
+                                    img.setAttribute('data-fullsrc', src);
+                                    imgsWrapper.appendChild(img);
+                                }
+                            });
+
+                            if (imgsWrapper.childElementCount > 0) {
+                                card.appendChild(imgsWrapper);
+                            }
+
+                            if (ej.descripcion) {
+                                const ejDesc = document.createElement('p');
+                                ejDesc.className = 'mb-0';
+                                ejDesc.textContent = ej.descripcion;
+                                card.appendChild(ejDesc);
+                            }
+
+                            ejerciciosEl.appendChild(card);
+                        });
+                    }
+
+                    return;
+                }
+
+                // Exportar la vista detalle de la sesión a PDF (archivo descargable)
+                if (exportButton) {
+                    const modalContent = document.querySelector('#detalleSesionModal .modal-content');
+                    const tituloEl = document.getElementById('detalleSesionTitulo');
+                    if (!modalContent || !window.jspdf || !window.html2canvas) return;
+
+                    const { jsPDF } = window.jspdf;
+
+                    html2canvas(modalContent, { scale: 2, useCORS: true }).then(function (canvas) {
+                        const imgData = canvas.toDataURL('image/png');
+                        const pdf = new jsPDF('p', 'pt', 'a4');
+
+                        const pageWidth = pdf.internal.pageSize.getWidth();
+                        const pageHeight = pdf.internal.pageSize.getHeight();
+                        const margin = 20;
+                        let imgWidth = pageWidth - margin * 2;
+                        let imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+                        // Si la imagen es más alta que la página, la escalamos para que quepa en una sola
+                        const maxHeight = pageHeight - margin * 2;
+                        if (imgHeight > maxHeight) {
+                            const ratio = maxHeight / imgHeight;
+                            imgHeight = maxHeight;
+                            imgWidth = imgWidth * ratio;
+                        }
+
+                        const posX = (pageWidth - imgWidth) / 2;
+                        const posY = margin;
+
+                        pdf.addImage(imgData, 'PNG', posX, posY, imgWidth, imgHeight);
+
+                        const tituloTexto = tituloEl && tituloEl.textContent ? tituloEl.textContent.trim() : 'sesion';
+                        const safeName = tituloTexto.replace(/[^a-zA-Z0-9-_]+/g, '-');
+                        pdf.save(`sesion-${safeName || 'detalle'}.pdf`);
+                    });
+
+                    return;
+                }
+            });
+        </script>
     </section>
 {% endblock %}

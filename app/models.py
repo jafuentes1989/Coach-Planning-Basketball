@@ -67,17 +67,21 @@ class Sesion(db.Model): #clase Sesion que hereda de db.Model
     titulo=db.Column(db.String(20), nullable=False) #título de la sesion
     descripcion=db.Column(db.String(500)) #descripcion de la sesion
     duracion=db.Column(db.Integer) #duración de la sesion en minutos
+    tipo_sesion=db.Column(db.String(20)) #tipo de sesion: fisica/tecnica/tactica
     confidencial=db.Column(db.Boolean, default=False) #indica si la sesion es confidencial
+    ejercicios_ids=db.Column(db.String) #lista de IDs de ejercicios asociados, separados por comas (max 10)
     #visibilidad=db.Column(db.Boolean, default=True) #visibilidad de la sesion
 
-    def __init__(self, autor, fecha, titulo, descripcion, duracion, confidencial=False): #constructor de la clase Sesion
+    def __init__(self, autor, fecha, titulo, descripcion, duracion, tipo_sesion=None, confidencial=False, ejercicios_ids=None): #constructor de la clase Sesion
         self.autor=autor
         #self.idEjercicio=idEjercicio
         self.fecha=fecha
         self.titulo=titulo
         self.descripcion=descripcion
         self.duracion=duracion
+        self.tipo_sesion=tipo_sesion
         self.confidencial=confidencial
+        self.ejercicios_ids=ejercicios_ids
         #self.visibilidad=visibilidad
 
     def __repr__(self): #representación en cadena del objeto Sesion

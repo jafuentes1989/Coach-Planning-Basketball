@@ -19,6 +19,9 @@
                     <th class="col">descripcion</th>
                     <th class="col">num_sesiones</th>
                     <th class="col">confidencial</th>
+                    {% if mostrar_ver %}
+                    <th class="col">Ver</th>
+                    {% endif %}
                     {% if mostrar_acciones %}
                     <th class="col">Editar</th>
                     <th class="col">Eliminar</th>
@@ -53,6 +56,21 @@
                     <td>
                         <p>{{ 'Sí' if planning.confidencial else 'No' }}</p>
                     </td>
+                    {% if mostrar_ver %}
+                    <td>
+                        <button type="button"
+                                class="btn btn-primary btn-sm btn-ver-planning"
+                                data-bs-toggle="modal"
+                                data-bs-target="#detallePlanningModal"
+                                data-titulo="{{ planning.titulo }}"
+                                data-nums="{{ planning.num_sesiones }}"
+                                data-fecha="{{ planning.fecha.strftime('%Y-%m-%d') }}"
+                                data-descripcion="{{ planning.descripcion }}"
+                                data-sesiones='{{ sesiones_por_planning.get(planning.id, []) | tojson }}'>
+                            Ver
+                        </button>
+                    </td>
+                    {% endif %}
                     {% if mostrar_acciones %}
                     <td>
                         {% if planning.autor == g.usuario.alias %}
@@ -69,5 +87,166 @@
                 {% endfor %}
             </tbody>
         </table>
+        
+        <!-- Modal detalle planning -->
+        <div class="modal fade" id="detallePlanningModal" tabindex="-1" aria-labelledby="detallePlanningModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="detallePlanningModalLabel">Detalle planning</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Primera línea: título (izq), número de sesiones (centro), fecha (dcha) -->
+                        <div class="row mb-2">
+                            <div class="col-4 text-start"><strong id="detallePlanningTitulo"></strong></div>
+                            <div class="col-4 text-center" id="detallePlanningNumSesiones"></div>
+                            <div class="col-4 text-end" id="detallePlanningFecha"></div>
+                        </div>
+                        <!-- Segunda línea: listado de sesiones -->
+                        <div id="detallePlanningSesiones" class="mb-3"></div>
+                        <!-- Última línea: descripción -->
+                        <p id="detallePlanningDescripcion" class="mt-2"></p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-primary btn-exportar-planning">Exportar</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Librerías para generar PDF en el navegador -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+        <script>
+            // Maneja el botón "Ver" de planning para mostrar detalle con sus sesiones
+            document.addEventListener('click', function (event) {
+                const verPlanningBtn = event.target.closest('.btn-ver-planning');
+                const exportButton = event.target.closest('.btn-exportar-planning');
+
+                // Rellenar modal al pulsar "Ver"
+                if (verPlanningBtn) {
+                    const titulo = verPlanningBtn.getAttribute('data-titulo') || '';
+                    const numSesiones = verPlanningBtn.getAttribute('data-nums') || '';
+                    const fecha = verPlanningBtn.getAttribute('data-fecha') || '';
+                    const descripcion = verPlanningBtn.getAttribute('data-descripcion') || '';
+                    const sesionesJson = verPlanningBtn.getAttribute('data-sesiones') || '[]';
+
+                    let sesiones = [];
+                    try {
+                        sesiones = JSON.parse(sesionesJson);
+                    } catch (e) {
+                        sesiones = [];
+                    }
+
+                    const tituloEl = document.getElementById('detallePlanningTitulo');
+                    const numSesionesEl = document.getElementById('detallePlanningNumSesiones');
+                    const fechaEl = document.getElementById('detallePlanningFecha');
+                    const descEl = document.getElementById('detallePlanningDescripcion');
+                    const sesionesEl = document.getElementById('detallePlanningSesiones');
+
+                    if (tituloEl) tituloEl.textContent = titulo;
+                    if (numSesionesEl) numSesionesEl.textContent = numSesiones ? `Nº sesiones: ${numSesiones}` : '';
+                    if (fechaEl) fechaEl.textContent = fecha;
+                    if (descEl) descEl.textContent = descripcion;
+
+                    if (sesionesEl) {
+                        sesionesEl.innerHTML = '';
+                        sesiones.forEach(function (s) {
+                            const card = document.createElement('div');
+                            card.className = 'border rounded p-2 mb-2';
+
+                            const title = document.createElement('h6');
+                            title.textContent = s.titulo || '';
+                            card.appendChild(title);
+
+                            const info = document.createElement('p');
+                            info.className = 'mb-1';
+                            const fechaSes = s.fecha || '';
+                            const dur = s.duracion != null ? s.duracion : '';
+                            const tipo = s.tipo_sesion || '';
+                            let infoText = '';
+                            if (fechaSes) infoText += `Fecha: ${fechaSes}`;
+                            if (dur !== '') infoText += (infoText ? ' | ' : '') + `Duración: ${dur} min`;
+                            if (tipo) infoText += (infoText ? ' | ' : '') + `Tipo: ${tipo}`;
+                            info.textContent = infoText;
+                            card.appendChild(info);
+                            // Línea "Ejercicios:" y listado de ejercicios (id y título)
+                            const ejerciciosLabel = document.createElement('p');
+                            ejerciciosLabel.className = 'mb-1 fw-semibold';
+                            ejerciciosLabel.textContent = 'Ejercicios:';
+                            card.appendChild(ejerciciosLabel);
+
+                            if (Array.isArray(s.ejercicios) && s.ejercicios.length > 0) {
+                                s.ejercicios.forEach(function (ej) {
+                                    const ejLine = document.createElement('p');
+                                    ejLine.className = 'mb-0';
+                                    const ejId = ej.id != null ? ej.id : '';
+                                    const ejTitulo = ej.titulo || '';
+                                    ejLine.textContent = `${ejId} - ${ejTitulo}`;
+                                    card.appendChild(ejLine);
+                                });
+                            }
+
+                            if (s.descripcion) {
+                                const descLabel = document.createElement('p');
+                                descLabel.className = 'mb-1 fw-semibold mt-1';
+                                descLabel.textContent = 'Descripción:';
+                                card.appendChild(descLabel);
+
+                                const sDesc = document.createElement('p');
+                                sDesc.className = 'mb-0';
+                                sDesc.textContent = s.descripcion;
+                                card.appendChild(sDesc);
+                            }
+
+                            sesionesEl.appendChild(card);
+                        });
+                    }
+
+                    return;
+                }
+
+                // Exportar el detalle del planning a PDF
+                if (exportButton) {
+                    const modalContent = document.querySelector('#detallePlanningModal .modal-content');
+                    const tituloEl = document.getElementById('detallePlanningTitulo');
+                    if (!modalContent || !window.jspdf || !window.html2canvas) return;
+
+                    const { jsPDF } = window.jspdf;
+
+                    html2canvas(modalContent, { scale: 2, useCORS: true }).then(function (canvas) {
+                        const imgData = canvas.toDataURL('image/png');
+                        const pdf = new jsPDF('p', 'pt', 'a4');
+
+                        const pageWidth = pdf.internal.pageSize.getWidth();
+                        const pageHeight = pdf.internal.pageSize.getHeight();
+                        const margin = 20;
+                        let imgWidth = pageWidth - margin * 2;
+                        let imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+                        const maxHeight = pageHeight - margin * 2;
+                        if (imgHeight > maxHeight) {
+                            const ratio = maxHeight / imgHeight;
+                            imgHeight = maxHeight;
+                            imgWidth = imgWidth * ratio;
+                        }
+
+                        const posX = (pageWidth - imgWidth) / 2;
+                        const posY = margin;
+
+                        pdf.addImage(imgData, 'PNG', posX, posY, imgWidth, imgHeight);
+
+                        const tituloTexto = tituloEl && tituloEl.textContent ? tituloEl.textContent.trim() : 'planning';
+                        const safeName = tituloTexto.replace(/[^a-zA-Z0-9-_]+/g, '-');
+                        pdf.save(`planning-${safeName || 'detalle'}.pdf`);
+                    });
+
+                    return;
+                }
+            });
+        </script>
     </section>
 {% endblock %}

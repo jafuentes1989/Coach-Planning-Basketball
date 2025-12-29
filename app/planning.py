@@ -18,9 +18,9 @@ bp=Blueprint('planning', __name__, url_prefix='/planning') #creamos el blueprint
 @bp.route('/listado') #ruta principal del blueprint planning
 @acceso_requerido #protegemos la vista con el decorador acceso_requerido
 def listado_planning(): #funcion para listar las plannings
-    #sesiones=Sesion.query.filter_by(visibilidad=True).all() #consultamos todas las sesiones visibles en la base de datos
-    planning=Planning.query.all() #consultamos todas las planning en la base de datos
-    return render_template('perfil/planning.html', planning=planning) #renderizamos la plantilla planning.html y pasamos las plannings como contexto
+    # Redirigimos al listado filtrado de plannings en el perfil,
+    # que ya aplica las reglas de visibilidad y permisos.
+    return redirect(url_for('perfil.planning'))
 
 
 @bp.route('/crear_planning', methods=['GET', 'POST']) #ruta para crear una nueva planning

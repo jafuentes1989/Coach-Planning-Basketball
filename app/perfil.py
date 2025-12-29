@@ -295,8 +295,87 @@ def planning(): #funcion de planning
             or_(Planning.confidencial.is_(False), Planning.confidencial.is_(None))
         ),
     )
+
     planning = Planning.query.filter(allowed_condition).all()
-    return render_template('perfil/planning.html', planning=planning, mostrar_acciones=True) #return de la funcion
+
+    # preparar las sesiones asociadas a cada planning en el orden definido en sesiones_ids
+    planning_sesiones_ids_map = {}
+    all_sesion_ids = set()
+    for pl in planning:
+        ids_list = []
+        if pl.sesiones_ids:
+            for parte in pl.sesiones_ids.split(','):
+                parte = (parte or '').strip()
+                if not parte or not parte.isdigit():
+                    continue
+                valor = int(parte)
+                ids_list.append(valor)
+                all_sesion_ids.add(valor)
+        planning_sesiones_ids_map[pl.id] = ids_list
+
+    sesiones_por_planning = {}
+    if all_sesion_ids:
+        sesiones_allowed = or_(
+            Sesion.autor == g.usuario.alias,
+            and_(
+                Sesion.autor.in_(followed_aliases),
+                or_(Sesion.confidencial.is_(False), Sesion.confidencial.is_(None))
+            ),
+        )
+
+        sesiones_objs = Sesion.query.filter(sesiones_allowed, Sesion.id.in_(all_sesion_ids)).all()
+        sesiones_by_id = {s.id: s for s in sesiones_objs}
+
+        # recopilar todos los IDs de ejercicios de las sesiones para minimzar consultas
+        all_ej_ids = set()
+        sesiones_ej_ids_map = {}
+        for s in sesiones_objs:
+            ids_list = []
+            if s.ejercicios_ids:
+                for parte in s.ejercicios_ids.split(','):
+                    parte = (parte or '').strip()
+                    if not parte or not parte.isdigit():
+                        continue
+                    valor = int(parte)
+                    ids_list.append(valor)
+                    all_ej_ids.add(valor)
+            sesiones_ej_ids_map[s.id] = ids_list
+
+        ejercicios_by_id = {}
+        if all_ej_ids:
+            ejercicios_objs = Ejercicio.query.filter(Ejercicio.id.in_(all_ej_ids)).all()
+            ejercicios_by_id = {e.id: e for e in ejercicios_objs}
+
+        for pl in planning:
+            datos_sesiones = []
+            for ses_id in planning_sesiones_ids_map.get(pl.id, []):
+                s = sesiones_by_id.get(ses_id)
+                if not s:
+                    continue
+
+                # construir lista de ejercicios (id y titulo) para esta sesión
+                ejercicios_sesion = []
+                for ej_id in sesiones_ej_ids_map.get(s.id, []):
+                    ej = ejercicios_by_id.get(ej_id)
+                    if not ej:
+                        continue
+                    ejercicios_sesion.append({
+                        'id': ej.id,
+                        'titulo': ej.titulo,
+                    })
+
+                datos_sesiones.append({
+                    'id': s.id,
+                    'titulo': s.titulo,
+                    'fecha': s.fecha.strftime('%Y-%m-%d') if s.fecha else '',
+                    'duracion': s.duracion,
+                    'tipo_sesion': s.tipo_sesion,
+                    'descripcion': s.descripcion,
+                    'ejercicios': ejercicios_sesion,
+                })
+            sesiones_por_planning[pl.id] = datos_sesiones
+
+    return render_template('perfil/planning.html', planning=planning, sesiones_por_planning=sesiones_por_planning, mostrar_ver=True, mostrar_acciones=True) #return de la funcion
 
 
 @bp.route('/ejercicios/<alias>')

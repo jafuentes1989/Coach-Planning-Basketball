@@ -8,6 +8,27 @@
             <a href="{{ url_for('sesiones.crear_sesion') }}" class="btn btn-success">Nueva</a>
         </nav>
 
+        <form class="row g-2 mb-3" method="get" action="{{ url_for('perfil.sesiones') }}">
+            <div class="col-md-3">
+                <input type="text" name="autor" class="form-control" placeholder="Autor" value="{{ autor_filtro or '' }}">
+            </div>
+            <div class="col-md-3">
+                <select name="tipo_sesion" class="form-control">
+                    <option value="" {% if not tipo_filtro %}selected{% endif %}>Tipo de sesión</option>
+                    <option value="fisica" {% if tipo_filtro == 'fisica' %}selected{% endif %}>Física</option>
+                    <option value="tecnica" {% if tipo_filtro == 'tecnica' %}selected{% endif %}>Técnica</option>
+                    <option value="tactica" {% if tipo_filtro == 'tactica' %}selected{% endif %}>Táctica</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <input type="text" name="descripcion" class="form-control" placeholder="Descripción" value="{{ descripcion_filtro or '' }}">
+            </div>
+            <div class="col-md-2 mt-2 mt-md-0">
+                <button type="submit" class="btn btn-success">Filtrar</button>
+                <a href="{{ url_for('perfil.sesiones') }}" class="btn btn-secondary ms-2">Limpiar</a>
+            </div>
+        </form>
+
         <table class="table">
             <thead>
                 <tr>

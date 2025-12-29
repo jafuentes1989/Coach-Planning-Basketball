@@ -224,6 +224,11 @@ def ejercicios(): #funcion de listado ejercicios
 @bp.route('/sesiones') #ruta para listado sesiones
 @acceso_requerido #protegemos la vista con el decorador acceso_requerido
 def sesiones(): #funcion de listado sesiones
+    # filtros desde la query string
+    autor_f = (request.args.get('autor') or '').strip()
+    tipo_f = (request.args.get('tipo_sesion') or '').strip()
+    descripcion_f = (request.args.get('descripcion') or '').strip()
+
     # usuarios a los que sigo
     seg_rels = Seguimiento.query.filter_by(seguidor_alias=g.usuario.alias, estado='aceptado').all()
     followed_aliases = [rel.seguido_alias for rel in seg_rels]
@@ -236,8 +241,21 @@ def sesiones(): #funcion de listado sesiones
             or_(Sesion.confidencial.is_(False), Sesion.confidencial.is_(None))
         ),
     )
+    query = Sesion.query.filter(allowed_condition)
 
-    sesiones = Sesion.query.filter(allowed_condition).all()
+    # autor contiene lo buscado
+    if autor_f:
+        query = query.filter(Sesion.autor.ilike(f"%{autor_f}%"))
+
+    # tipo de sesión: valor exacto
+    if tipo_f:
+        query = query.filter(Sesion.tipo_sesion == tipo_f)
+
+    # descripcion contiene el texto introducido
+    if descripcion_f:
+        query = query.filter(Sesion.descripcion.ilike(f"%{descripcion_f}%"))
+
+    sesiones = query.all()
 
     # preparar los ejercicios asociados a cada sesión en el orden definido en ejercicios_ids
     sesiones_ids_map = {}
@@ -278,7 +296,16 @@ def sesiones(): #funcion de listado sesiones
                 })
             ejercicios_por_sesion[sesion.id] = datos_ejercicios
 
-    return render_template('perfil/sesiones.html', sesiones=sesiones, ejercicios_por_sesion=ejercicios_por_sesion, mostrar_ver=True, mostrar_acciones=True) #return de la funcion
+    return render_template(
+        'perfil/sesiones.html',
+        sesiones=sesiones,
+        ejercicios_por_sesion=ejercicios_por_sesion,
+        autor_filtro=autor_f,
+        tipo_filtro=tipo_f,
+        descripcion_filtro=descripcion_f,
+        mostrar_ver=True,
+        mostrar_acciones=True,
+    ) #return de la funcion
 
 @bp.route('/planning') #ruta para configurar planning
 @acceso_requerido #protegemos la vista con el decorador acceso_requerido

@@ -4,7 +4,7 @@
 {% block content %}
     <section class="container-fluid">
         <nav class="navbar">
-            <h1>{% block title %}Sesiones{% endblock %}</h1>
+            <h1>{% block title %}Plannings{% endblock %}</h1>
             <a href="{{ url_for('planning.crear_planning') }}" class="btn btn-success">Nueva</a>
         </nav>
 
@@ -19,6 +19,10 @@
                     <th class="col">descripcion</th>
                     <th class="col">num_sesiones</th>
                     <th class="col">confidencial</th>
+                    {% if mostrar_acciones %}
+                    <th class="col">Editar</th>
+                    <th class="col">Eliminar</th>
+                    {% endif %}
                 </tr>
             </thead>
             <tbody>
@@ -32,10 +36,10 @@
                         <p>{{ planning.autor }}</p>
                     </td>
                     <td>
-                        <p>{{ planning.idEjercicio }}</p>
+                        <p>{{ planning.sesiones_ids or '' }}</p>
                     </td>
                     <td>
-                        <p>{{ planning.fecha }}</p>
+                        <p>{{ planning.fecha.strftime('%Y-%m-%d') }}</p>
                     </td>
                     <td>
                         <p>{{ planning.titulo }}</p>
@@ -49,12 +53,18 @@
                     <td>
                         <p>{{ 'Sí' if planning.confidencial else 'No' }}</p>
                     </td>
+                    {% if mostrar_acciones %}
                     <td>
+                        {% if planning.autor == g.usuario.alias %}
                         <a href="{{ url_for('planning.editar_planning', id=planning.id) }}" class="btn btn-info btn-sm">Editar</a>
+                        {% endif %}
                     </td>
                     <td>
+                        {% if planning.autor == g.usuario.alias %}
                         <a href="{{ url_for('planning.eliminar_planning', id=planning.id) }}" class="btn btn-danger">Eliminar</a>
+                        {% endif %}
                     </td>
+                    {% endif %}
                 </tr>
                 {% endfor %}
             </tbody>

@@ -295,9 +295,8 @@ def planning(): #funcion de planning
             or_(Planning.confidencial.is_(False), Planning.confidencial.is_(None))
         ),
     )
-
     planning = Planning.query.filter(allowed_condition).all()
-    return render_template('perfil/planning.html', planning=planning) #return de la funcion
+    return render_template('perfil/planning.html', planning=planning, mostrar_acciones=True) #return de la funcion
 
 
 @bp.route('/ejercicios/<alias>')

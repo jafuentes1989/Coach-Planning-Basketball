@@ -8,9 +8,10 @@ from flask import Blueprint, render_template, request, redirect, url_for, g
 
 from app.auth import acceso_requerido #importamos el decorador acceso_requerido para proteger las vistas
 
-from .models import Ejercicio, Usuario, Sesion, Planning #importamos el modelo Ejercicio, Usuario, Sesion y Planning desde models.py
+from .models import Ejercicio, Usuario, Sesion, Planning, Seguimiento #importamos el modelo Ejercicio, Usuario, Sesion, Planning y Seguimiento desde models.py
 from app import db #importamos el objeto db desde __init__.py para interactuar con la base de datos
 from datetime import datetime #importamos datetime para manejar fechas
+from sqlalchemy import or_, and_
 
 bp=Blueprint('planning', __name__, url_prefix='/planning') #creamos el blueprint PLANNING
 
@@ -29,8 +30,48 @@ def crear_planning(): #funcion para crear una nueva planning
         fecha_raw = request.form['fecha'] #obtenemos la fecha del formulario como string
         titulo= request.form['titulo'] #obtenemos el titulo del formulario
         descripcion = request.form['descripcion'] #obtenemos la descripcion del formulario
-        num_sesiones = request.form['num_sesiones'] #obtenemos el numero de sesiones del formulario
         confidencial = request.form.get('confidencial') == 'on' #checkbox confidencial
+
+        # IDs de sesiones introducidos manualmente, separados por comas (max 10)
+        sesiones_ids_raw = (request.form.get('sesiones_ids') or '').strip()
+
+        # parsear a lista de enteros únicos, manteniendo orden
+        ids_parseds = []
+        if sesiones_ids_raw:
+            vistos = set()
+            for parte in sesiones_ids_raw.split(','):
+                parte = parte.strip()
+                if not parte or not parte.isdigit():
+                    continue
+                valor = int(parte)
+                if valor not in vistos:
+                    vistos.add(valor)
+                    ids_parseds.append(valor)
+
+        # limitar a max 10
+        ids_parseds = ids_parseds[:10]
+
+        # obtener ids de sesiones permitidas para este usuario (propias + seguidos no confidenciales)
+        sesiones_ids_final = []
+        sesiones_permitidas = []
+        if ids_parseds:
+            seg_rels = Seguimiento.query.filter_by(seguidor_alias=g.usuario.alias, estado='aceptado').all()
+            followed_aliases = [rel.seguido_alias for rel in seg_rels]
+
+            allowed_condition = or_(
+                Sesion.autor == g.usuario.alias,
+                and_(
+                    Sesion.autor.in_(followed_aliases),
+                    or_(Sesion.confidencial.is_(False), Sesion.confidencial.is_(None))
+                ),
+            )
+            sesiones_permitidas = Sesion.query.filter(allowed_condition, Sesion.id.in_(ids_parseds)).all()
+            sesiones_ids_final = [str(s.id) for s in sesiones_permitidas]
+
+        sesiones_ids_str = ','.join(sesiones_ids_final) if sesiones_ids_final else None
+
+        # calcular num_sesiones como el número de sesiones permitidas
+        num_sesiones = len(sesiones_permitidas) if sesiones_permitidas else 0
 
         # convertir fecha string a datetime object
         try:
@@ -45,13 +86,15 @@ def crear_planning(): #funcion para crear una nueva planning
             titulo=titulo,
             descripcion=descripcion,
             num_sesiones=num_sesiones,
-            confidencial=confidencial
+            confidencial=confidencial,
+            sesiones_ids=sesiones_ids_str
         ) 
             
 
         db.session.add(nueva_planning) #añadimos la nueva planning a la sesión de la base de datos
         db.session.commit() #confirmamos los cambios en la base de datos
-        return redirect(url_for('planning.listado_planning')) #redireccionamos al listado de plannings
+        # tras crear, volvemos al listado filtrado de plannings del perfil
+        return redirect(url_for('perfil.planning'))
 
     return render_template('plannings/crear_planning.html') #renderizamos la plantilla crear_planning.html
 
@@ -64,8 +107,48 @@ def editar_planning(id): #funcion para editar una planning
         fecha_raw = request.form['fecha'] #obtenemos la fecha del formulario como string
         titulo = request.form['titulo'] #obtenemos el titulo del formulario
         descripcion = request.form['descripcion'] #obtenemos la descripcion del formulario
-        num_sesiones = request.form['num_sesiones'] #obtenemos el numero de sesiones del formulario
         confidencial = request.form.get('confidencial') == 'on' #checkbox confidencial
+
+        # IDs de sesiones introducidos manualmente, separados por comas (max 10)
+        sesiones_ids_raw = (request.form.get('sesiones_ids') or '').strip()
+
+        # parsear a lista de enteros únicos, manteniendo orden
+        ids_parseds = []
+        if sesiones_ids_raw:
+            vistos = set()
+            for parte in sesiones_ids_raw.split(','):
+                parte = parte.strip()
+                if not parte or not parte.isdigit():
+                    continue
+                valor = int(parte)
+                if valor not in vistos:
+                    vistos.add(valor)
+                    ids_parseds.append(valor)
+
+        # limitar a max 10
+        ids_parseds = ids_parseds[:10]
+
+        # obtener ids de sesiones permitidas para este usuario (propias + seguidos no confidenciales)
+        sesiones_ids_final = []
+        sesiones_permitidas = []
+        if ids_parseds:
+            seg_rels = Seguimiento.query.filter_by(seguidor_alias=g.usuario.alias, estado='aceptado').all()
+            followed_aliases = [rel.seguido_alias for rel in seg_rels]
+
+            allowed_condition = or_(
+                Sesion.autor == g.usuario.alias,
+                and_(
+                    Sesion.autor.in_(followed_aliases),
+                    or_(Sesion.confidencial.is_(False), Sesion.confidencial.is_(None))
+                ),
+            )
+            sesiones_permitidas = Sesion.query.filter(allowed_condition, Sesion.id.in_(ids_parseds)).all()
+            sesiones_ids_final = [str(s.id) for s in sesiones_permitidas]
+
+        sesiones_ids_str = ','.join(sesiones_ids_final) if sesiones_ids_final else None
+
+        # calcular num_sesiones como el número de sesiones permitidas
+        num_sesiones = len(sesiones_permitidas) if sesiones_permitidas else 0
 
         # convertir fecha string a datetime object
         try:
@@ -80,9 +163,11 @@ def editar_planning(id): #funcion para editar una planning
         planning.descripcion = descripcion
         planning.num_sesiones = num_sesiones
         planning.confidencial = confidencial
+        planning.sesiones_ids = sesiones_ids_str
 
         db.session.commit() #confirmamos los cambios en la base de datos
-        return redirect(url_for('planning.listado_planning')) #redireccionamos al listado de plannings
+        # tras editar, volvemos al listado filtrado de plannings del perfil
+        return redirect(url_for('perfil.planning'))
 
     return render_template('plannings/editar_planning.html', planning=planning) #renderizamos la plantilla editar_planning.html con la planning
 
@@ -93,4 +178,5 @@ def eliminar_planning(id): #funcion para eliminar una planning
     planning = Planning.query.get_or_404(id) #obtenemos la planning por id, o 404 si no existe
     db.session.delete(planning) #eliminamos la planning de la sesión de la base de datos
     db.session.commit() #confirmamos los cambios en la base de datos
-    return redirect(url_for('planning.listado_planning')) #redireccionamos al listado de plannings
+    # tras eliminar, volvemos al listado filtrado de plannings del perfil
+    return redirect(url_for('perfil.planning'))

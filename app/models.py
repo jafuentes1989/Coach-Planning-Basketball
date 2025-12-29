@@ -96,10 +96,11 @@ class Planning(db.Model): #clase Planning que hereda de db.Model
     titulo=db.Column(db.String(20), nullable=False) #título de la sesion
     descripcion=db.Column(db.String(500)) #descripcion de la sesion
     num_sesiones=db.Column(db.Integer) #numero de sesiones
+    sesiones_ids=db.Column(db.String) #lista de IDs de sesiones asociadas, separados por comas (max 10)
     visibilidad=db.Column(db.Boolean, default=True) #visibilidad de la sesion
     confidencial=db.Column(db.Boolean, default=False) #indica si el planning es confidencial
 
-    def __init__(self, autor, fecha, titulo, descripcion, num_sesiones, confidencial=False): #constructor de la clase Planning
+    def __init__(self, autor, fecha, titulo, descripcion, num_sesiones, confidencial=False, sesiones_ids=None): #constructor de la clase Planning
         self.autor=autor
         #self.idSesion=idSesion
         self.fecha=fecha
@@ -107,6 +108,7 @@ class Planning(db.Model): #clase Planning que hereda de db.Model
         self.descripcion=descripcion
         self.num_sesiones=num_sesiones
         self.confidencial=confidencial
+        self.sesiones_ids=sesiones_ids
         #self.visibilidad=visibilidad
 
     def __repr__(self): #representación en cadena del objeto Planning

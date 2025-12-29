@@ -7,7 +7,7 @@
         <form action="" method="post">
             <div class="mb-3">
                 <label for="fecha" class="form-label">Fecha</label>
-                <input type="date" class="form-control" id="fecha" name="fecha" required value="{{ planning.fecha }}">
+                <input type="date" class="form-control" id="fecha" name="fecha" required value="{{ planning.fecha.strftime('%Y-%m-%d') }}">
             </div>
             <div class="mb-3">
                 <label for="titulo" class="form-label">Título</label>
@@ -18,8 +18,11 @@
                 <textarea class="form-control" id="descripcion" name="descripcion" rows="3" required>{{ planning.descripcion }}</textarea>
             </div>
             <div class="mb-3">
-                <label for="num_sesiones" class="form-label">Número de Sesiones</label>
-                <input type="number" class="form-control" id="num_sesiones" name="num_sesiones" required value="{{ planning.num_sesiones }}">
+                <label for="sesiones_ids" class="form-label">IDs de sesiones</label>
+                <input type="text" class="form-control" id="sesiones_ids" name="sesiones_ids" value="{{ planning.sesiones_ids or '' }}" placeholder="Ej: 1, 5, 23" />
+                <div class="form-text">
+                    Introduce hasta 10 IDs de sesiones separados por comas. Solo se tendrán en cuenta sesiones que tengas en tu listado (tuyas o de usuarios a los que sigues y no confidenciales).
+                </div>
             </div>
             <div class="form-check mb-3">
                 <input class="form-check-input" type="checkbox" id="confidencial" name="confidencial" {% if planning.confidencial %}checked{% endif %}>

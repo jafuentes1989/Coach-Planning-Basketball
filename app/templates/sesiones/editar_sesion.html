@@ -18,10 +18,6 @@
                 <textarea class="form-control" id="descripcion" name="descripcion" rows="3" required>{{ sesion.descripcion }}</textarea>
             </div>
             <div class="mb-3">
-                <label for="duracion" class="form-label">Duración (minutos)</label>
-                <input type="number" class="form-control" id="duracion" name="duracion" required value="{{ sesion.duracion }}">
-            </div>
-            <div class="mb-3">
                 <label for="tipo_sesion" class="form-label">Tipo de sesión</label>
                 <select class="form-select" id="tipo_sesion" name="tipo_sesion" required>
                     <option value="fisica" {% if sesion.tipo_sesion == 'fisica' %}selected{% endif %}>Física</option>

@@ -30,7 +30,6 @@ def crear_sesion(): #funcion para crear una nueva sesion
         fecha_raw = request.form['fecha'] #obtenemos la fecha del formulario como string
         titulo= request.form['titulo'] #obtenemos el titulo del formulario
         descripcion = request.form['descripcion'] #obtenemos la descripcion del formulario
-        duracion = request.form['duracion'] #obtenemos la duracion del formulario
         tipo_sesion = (request.form.get('tipo_sesion') or '').strip() or None
         confidencial = request.form.get('confidencial') == 'on' #checkbox confidencial
 
@@ -55,6 +54,7 @@ def crear_sesion(): #funcion para crear una nueva sesion
 
         # obtener ids de ejercicios permitidos para este usuario (propios + seguidos no confidenciales)
         ejercicios_ids_final = []
+        ejercicios_permitidos = []
         if ids_parseds:
             seg_rels = Seguimiento.query.filter_by(seguidor_alias=g.usuario.alias, estado='aceptado').all()
             followed_aliases = [rel.seguido_alias for rel in seg_rels]
@@ -72,6 +72,11 @@ def crear_sesion(): #funcion para crear una nueva sesion
 
         ejercicios_ids_str = ','.join(ejercicios_ids_final) if ejercicios_ids_final else None
 
+        # calcular duracion total como suma de las duraciones de los ejercicios permitidos
+        duracion_total = 0
+        if ejercicios_permitidos:
+            duracion_total = sum((e.duracion or 0) for e in ejercicios_permitidos)
+
         # convertir fecha string a datetime object
         try:
             fecha = datetime.strptime(fecha_raw, '%Y-%m-%d').date()  # si es date, usar .date()
@@ -85,7 +90,7 @@ def crear_sesion(): #funcion para crear una nueva sesion
             fecha=fecha,
             titulo=titulo,
             descripcion=descripcion,
-            duracion=duracion,
+            duracion=duracion_total,
             tipo_sesion=tipo_sesion,
             confidencial=confidencial,
             ejercicios_ids=ejercicios_ids_str
@@ -111,7 +116,6 @@ def editar_sesion(id): #funcion para editar una sesion
         fecha_raw = request.form['fecha'] #obtenemos la fecha del formulario como string
         titulo = request.form['titulo'] #obtenemos el titulo del formulario
         descripcion = request.form['descripcion'] #obtenemos la descripcion del formulario
-        duracion = request.form['duracion'] #obtenemos la duracion del formulario
         tipo_sesion = (request.form.get('tipo_sesion') or '').strip() or None
         confidencial = request.form.get('confidencial') == 'on' #checkbox confidencial
 
@@ -136,6 +140,7 @@ def editar_sesion(id): #funcion para editar una sesion
 
         # obtener ids de ejercicios permitidos para este usuario (propios + seguidos no confidenciales)
         ejercicios_ids_final = []
+        ejercicios_permitidos = []
         if ids_parseds:
             seg_rels = Seguimiento.query.filter_by(seguidor_alias=g.usuario.alias, estado='aceptado').all()
             followed_aliases = [rel.seguido_alias for rel in seg_rels]
@@ -153,6 +158,11 @@ def editar_sesion(id): #funcion para editar una sesion
 
         ejercicios_ids_str = ','.join(ejercicios_ids_final) if ejercicios_ids_final else None
 
+        # calcular duracion total como suma de las duraciones de los ejercicios permitidos
+        duracion_total = 0
+        if ejercicios_permitidos:
+            duracion_total = sum((e.duracion or 0) for e in ejercicios_permitidos)
+
         # convertir fecha string a datetime object
         try:
             fecha = datetime.strptime(fecha_raw, '%Y-%m-%d').date()  # si es date, usar .date()
@@ -164,7 +174,7 @@ def editar_sesion(id): #funcion para editar una sesion
         sesion.fecha = fecha
         sesion.titulo = titulo
         sesion.descripcion = descripcion
-        sesion.duracion = duracion
+        sesion.duracion = duracion_total
         sesion.tipo_sesion = tipo_sesion
         sesion.confidencial = confidencial
         sesion.ejercicios_ids = ejercicios_ids_str

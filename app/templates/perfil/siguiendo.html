@@ -11,7 +11,6 @@
         <table class="table">
             <thead>
                 <tr>
-                    <th class="col">ID</th>
                     <th class="col">alias</th>
                     <th class="col">nombre</th>
                     <th class="col">apellido</th>
@@ -24,9 +23,6 @@
             <tbody>
                 {% for siguiendo in siguiendos | reverse %}
                 <tr>
-                    <td>
-                        <p>{{ siguiendo.id }}</p>
-                    </td>
                     <td>
                         <p>{{ siguiendo.alias }}</p>
                     </td>

@@ -242,12 +242,24 @@
                 // Exportar la vista detalle de la sesión a PDF (archivo descargable)
                 if (exportButton) {
                     const modalContent = document.querySelector('#detalleSesionModal .modal-content');
+                    const modalFooter = document.querySelector('#detalleSesionModal .modal-footer');
                     const tituloEl = document.getElementById('detalleSesionTitulo');
                     if (!modalContent || !window.jspdf || !window.html2canvas) return;
 
                     const { jsPDF } = window.jspdf;
 
+                    // Ocultamos el footer (botones) para que no aparezca en el PDF
+                    const previousFooterDisplay = modalFooter ? modalFooter.style.display : null;
+                    if (modalFooter) {
+                        modalFooter.style.display = 'none';
+                    }
+
                     html2canvas(modalContent, { scale: 2, useCORS: true }).then(function (canvas) {
+                        // Restauramos la visibilidad del footer después de capturar
+                        if (modalFooter) {
+                            modalFooter.style.display = previousFooterDisplay;
+                        }
+
                         const imgData = canvas.toDataURL('image/png');
                         const pdf = new jsPDF('p', 'pt', 'a4');
 
@@ -273,6 +285,11 @@
                         const tituloTexto = tituloEl && tituloEl.textContent ? tituloEl.textContent.trim() : 'sesion';
                         const safeName = tituloTexto.replace(/[^a-zA-Z0-9-_]+/g, '-');
                         pdf.save(`sesion-${safeName || 'detalle'}.pdf`);
+                    }).finally(function () {
+                        // Por seguridad, nos aseguramos de restaurar el footer si algo falló
+                        if (modalFooter) {
+                            modalFooter.style.display = previousFooterDisplay;
+                        }
                     });
 
                     return;

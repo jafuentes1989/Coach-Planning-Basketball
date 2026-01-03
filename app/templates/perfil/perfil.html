@@ -77,14 +77,12 @@
                     <div class="card">
                         <div class="card-body text-center">
                             <h5 class="card-title text-danger">Temporadas</h5>
-                            <br>
                             {% set max_temporadas = 30 %}
                             {% set percentage = ((usuario.temporadas / max_temporadas) * 100) | round %}
                             <div class="progress mb-3" style="height: 20px;">
                                 <div class="progress-bar bg-primary" role="progressbar" style="width: {{ percentage }}%;" aria-valuenow="{{ usuario.temporadas }}" aria-valuemin="0" aria-valuemax="{{ max_temporadas }}">
                                 </div>
                             </div>
-                            <br>
                             <p><strong>{{ usuario.temporadas }}</strong></p>
                         </div>
                     </div>
@@ -104,7 +102,7 @@
                     <div class="card">
                         <div class="card-body text-center">
                             <div class="mb-3">
-                                <canvas width="100" height="100"></canvas>
+                                <canvas width="100" height="70"></canvas>
                                 <input class="form-control" type="text" value="{{ num_seguidores }}" readonly style="width: 60px; margin: 0 auto;">
                             </div>
                             <h5 class="card-title text-danger">Seguidores</h5>
@@ -117,7 +115,7 @@
                     <div class="card">
                         <div class="card-body text-center">
                             <div class="mb-3">
-                                <canvas width="100" height="100"></canvas>
+                                <canvas width="100" height="70"></canvas>
                                 <input class="form-control" type="text" value="{{ num_siguiendo }}" readonly style="width: 60px; margin: 0 auto;">
                             </div>
                             <h5 class="card-title text-danger">Siguiendo</h5>
@@ -130,7 +128,7 @@
                     <div class="card">
                         <div class="card-body text-center">
                             <div class="mb-3">
-                                <canvas width="100" height="100"></canvas>
+                                <canvas width="100" height="70"></canvas>
                                 <input class="form-control" type="text" value="{{ num_solicitudes }}" readonly style="width: 60px; margin: 0 auto;">
                             </div>
                             <h5 class="card-title text-danger">Solicitudes</h5>
@@ -145,7 +143,7 @@
                     <div class="card">
                         <div class="card-body text-center">
                             <div class="mb-3">
-                                <canvas width="100" height="100"></canvas>
+                                <canvas width="100" height="70"></canvas>
                                 <input class="form-control" type="text" value="{{ num_ejercicios }}" readonly style="width: 60px; margin: 0 auto;">
                             </div>
                             <h5 class="card-title text-danger">Ejercicios</h5>
@@ -162,7 +160,7 @@
                     <div class="card">
                         <div class="card-body text-center">
                             <div class="mb-3">
-                                <canvas width="100" height="100"></canvas>
+                                <canvas width="100" height="70"></canvas>
                                 <input class="form-control" type="text" value="{{ num_sesiones }}" readonly style="width: 60px; margin: 0 auto;">
                             </div>
                             <h5 class="card-title text-danger">Sesiones</h5>
@@ -179,7 +177,7 @@
                     <div class="card">
                         <div class="card-body text-center">
                             <div class="mb-3">
-                                <canvas width="100" height="100"></canvas>
+                                <canvas width="100" height="70"></canvas>
                                 <input class="form-control" type="text" value="{{ num_planning }}" readonly style="width: 60px; margin: 0 auto;">
                             </div>
                             <h5 class="card-title text-danger">Planning</h5>

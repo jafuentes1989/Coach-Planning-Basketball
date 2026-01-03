@@ -10,7 +10,6 @@
         <table class="table">
             <thead>
                 <tr>
-                    <th class="col">ID</th>
                     <th class="col">alias</th>
                     <th class="col">nombre</th>
                     <th class="col">apellido</th>
@@ -23,9 +22,6 @@
             <tbody>
                 {% for seguidor in seguidores | reverse %}
                 <tr>
-                    <td>
-                        <p>{{ seguidor.id }}</p>
-                    </td>
                     <td>
                         <p>{{ seguidor.alias }}</p>
                     </td>

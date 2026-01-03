@@ -12,7 +12,6 @@
         <table class="table">
             <thead>
                 <tr>
-                    <th class="col">ID</th>
                     <th class="col">alias</th>
                     <th class="col">nombre</th>
                     <th class="col">apellido</th>
@@ -26,9 +25,6 @@
             <tbody>
                 {% for usuario in solicitudes | reverse %}
                 <tr>
-                    <td>
-                        <p>{{ usuario.id }}</p>
-                    </td>
                     <td>
                         <p>{{ usuario.alias }}</p>
                     </td>

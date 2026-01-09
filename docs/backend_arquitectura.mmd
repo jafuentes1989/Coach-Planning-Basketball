@@ -1,0 +1,19 @@
+flowchart LR
+    RUN[run.py] --> APP_FACTORY[create_app]
+    APP_FACTORY --> FLASK[Flask app]
+
+    FLASK --> CFG[Config app]
+    FLASK --> DB[SQLAlchemy]
+    FLASK --> MIGRATE[Flask-Migrate]
+
+    FLASK --> BP_AUTH[auth /auth]
+    FLASK --> BP_PERFIL[perfil /perfil]
+    FLASK --> BP_EJ[ejercicios /ejercicios]
+    FLASK --> BP_SES[sesiones /sesiones]
+    FLASK --> BP_PLAN[planning /planning]
+
+    BP_AUTH --> AUTH_VISTAS[registro, acceso, logout]
+    BP_PERFIL --> PERFIL_VISTAS[perfil, config, listados]
+    BP_EJ --> EJ_VISTAS[CRUD ejercicios]
+    BP_SES --> SES_VISTAS[CRUD sesiones]
+    BP_PLAN --> PLAN_VISTAS[CRUD plannings]

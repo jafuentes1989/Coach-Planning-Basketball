@@ -1,0 +1,13 @@
+flowchart TD
+    U[Usuario navegador] --> R[Rutas Flask]
+
+    subgraph Publica
+        R --> R_inicio[GET / - inicio.html]
+        R --> R_registro[GET /auth/registro - registro.html]
+        R --> R_acceso[GET /auth/acceso - acceso.html]
+    end
+
+    subgraph Privada
+        R --> R_perfil[GET /perfil/ - perfil.html]
+        R --> R_config[GET /perfil/configPerfil - configPerfil.html]
+    end

@@ -1,0 +1,67 @@
+classDiagram
+    class Usuario {
+        String alias PK unique
+        String nombre
+        String apellido
+        String email unique
+        String password hashed
+        String nivel
+        int temporadas
+        String club
+        String profile_image
+    }
+
+    class Ejercicio {
+        int id PK
+        String autor FK usuario.alias
+        String titulo
+        String fundamento_trabajado
+        String imagen_url
+        String imagen_url_2
+        String imagen_url_3
+        String descripcion
+        int jugadores
+        int duracion
+        bool confidencial
+    }
+
+    class Sesion {
+        int id PK
+        String autor FK usuario.alias
+        DateTime fecha
+        String titulo
+        String descripcion
+        int duracion
+        String tipo_sesion
+        bool confidencial
+        String ejercicios_ids CSV
+    }
+
+    class Planning {
+        int id PK
+        String autor FK usuario.alias
+        DateTime fecha
+        String titulo
+        String descripcion
+        int num_sesiones
+        String sesiones_ids CSV
+        bool visibilidad
+        bool confidencial
+    }
+
+    class Seguimiento {
+        int id PK
+        String seguidor_alias FK usuario.alias
+        String seguido_alias FK usuario.alias
+        String estado
+    }
+
+    Usuario "1" <-- "many" Ejercicio : autor
+    Usuario "1" <-- "many" Sesion : autor
+    Usuario "1" <-- "many" Planning : autor
+
+    Usuario "1" <-- "many" Seguimiento : seguidor
+    Usuario "1" <-- "many" Seguimiento : seguido
+
+    Sesion "1" <-- "many" Ejercicio : ejercicios_ids
+    Planning "1" <-- "many" Sesion : sesiones_ids

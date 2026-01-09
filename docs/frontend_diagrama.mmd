@@ -1,0 +1,47 @@
+flowchart TD
+    U[Usuario / Navegador] -->|HTTP| R[/Rutas Flask/]
+
+    %% Rutas públicas
+    R -->|"GET /"| T_inicio[inicio.html]
+    R -->|"GET /auth/registro"| T_registro[auth/registro.html]
+    R -->|"GET /auth/acceso"| T_acceso[auth/acceso.html]
+
+    %% Área privada (requiere login)
+    R -->|"GET /perfil/"| T_perfil[perfil/perfil.html]
+    R -->|"GET /perfil/configPerfil"| T_configPerfil[perfil/configPerfil.html]
+
+    %% Listados dentro de perfil
+    R -->|"GET /perfil/ejercicios"| T_perfil_ejs[perfil/ejercicios.html]
+    R -->|"GET /perfil/sesiones"| T_perfil_ses[perfil/sesiones.html]
+    R -->|"GET /perfil/planning"| T_perfil_plan[perfil/planning.html]
+
+    %% CRUD Ejercicios
+    R -->|"GET /ejercicios/crear_ejercicio"| T_ej_crear[ejercicios/crear_ejercicio.html]
+    R -->|"GET /ejercicios/editar_ejercicio"| T_ej_editar[ejercicios/editar_ejercicio.html]
+
+    %% CRUD Sesiones
+    R -->|"GET /sesiones/crear_sesion"| T_ses_crear[sesiones/crear_sesion.html]
+    R -->|"GET /sesiones/editar_sesion"| T_ses_editar[sesiones/editar_sesion.html]
+
+    %% CRUD Plannings
+    R -->|"GET /planning/crear_planning"| T_plan_crear[plannings/crear_planning.html]
+    R -->|"GET /planning/editar_planning"| T_plan_editar[plannings/editar_planning.html]
+
+    %% Plantilla base compartida
+    subgraph Templates
+        T_base[plantilla.html]
+        T_inicio --> T_base
+        T_registro --> T_base
+        T_acceso --> T_base
+        T_perfil --> T_base
+        T_configPerfil --> T_base
+        T_perfil_ejs --> T_base
+        T_perfil_ses --> T_base
+        T_perfil_plan --> T_base
+        T_ej_crear --> T_base
+        T_ej_editar --> T_base
+        T_ses_crear --> T_base
+        T_ses_editar --> T_base
+        T_plan_crear --> T_base
+        T_plan_editar --> T_base
+    end

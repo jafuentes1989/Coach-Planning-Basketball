@@ -1,0 +1,18 @@
+flowchart LR
+    DB[(Base de datos cpb.db)]
+
+    DB --> USUARIO[Usuario]
+    DB --> EJERCICIO[Ejercicio]
+    DB --> SESION[Sesion]
+    DB --> PLANNING[Planning]
+    DB --> SEGUIMIENTO[Seguimiento]
+
+    EJERCICIO -->|autor| USUARIO
+    SESION -->|autor| USUARIO
+    PLANNING -->|autor| USUARIO
+
+    SEGUIMIENTO -->|seguidor_alias| USUARIO
+    SEGUIMIENTO -->|seguido_alias| USUARIO
+
+    SESION -->|ejercicios_ids| EJERCICIO
+    PLANNING -->|sesiones_ids| SESION

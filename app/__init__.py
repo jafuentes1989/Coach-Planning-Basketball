@@ -14,16 +14,20 @@ from flask_migrate import Migrate
 db=SQLAlchemy() #instanciamos SQLAlchemy como objeto DB
 migrate = Migrate() #instanciamos Migrate
 
-def create_app(): #funcion para crear la APP
+def create_app(test_config=None): #funcion para crear la APP
     app=Flask(__name__) #instancio APP como objeto Flask
 
-    #configuracion del proyecto
+    #configuracion del proyecto por defecto
     app.config.from_mapping( #mapeo
         DEBUG=True, #debug activado
         SECRET_KEY='dev',#key para DB
         SQLALCHEMY_DATABASE_URI="sqlite:///cpb.db",#ruta de la base de datos
         UPLOAD_FOLDER=os.path.join(app.root_path, 'static', 'uploads') #carpeta para subir imágenes
     )
+
+    # permitir sobreescribir configuracion (por ejemplo, en tests)
+    if test_config is not None:
+        app.config.update(test_config)
 
     db.init_app(app) #inicializamos la base de datos con la APP
     migrate.init_app(app, db) #inicializamos Migrate con la APP y DB

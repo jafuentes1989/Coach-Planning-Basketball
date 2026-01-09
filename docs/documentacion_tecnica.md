@@ -139,8 +139,68 @@ Stack principal: Flask + SQLAlchemy + SQLite
 1. Crear/activar entorno virtual (opcional pero recomendado).
 2. Instalar dependencias: `pip install -r requirements.txt`.
 3. Ejecutar la app:
-  - `python run.py`
+   - `python run.py`
 4. Acceder en el navegador a `http://127.0.0.1:5000/`.
+
+## Testing
+
+- Framework: `pytest` (incluido en `requirements.txt`).
+- Ubicación de tests: carpeta `tests/` en la raíz del proyecto.
+
+### Configuración de la app para tests
+
+- La función `create_app(test_config=None)` en [app/__init__.py](app/__init__.py) permite inyectar una configuración específica para testing.
+- En [tests/conftest.py](tests/conftest.py) se define:
+  - `TESTING = True`.
+  - BBDD SQLite aislada: `sqlite:///test_cpb.db` (fichero en la raíz del proyecto).
+  - Carpeta de uploads de prueba: `./test_uploads` (se crea y elimina automáticamente).
+- Fixtures principales:
+  - `app`: instancia de la aplicación para toda la sesión de tests, creando y eliminando las tablas.
+  - `client`: cliente de pruebas de Flask (`app.test_client()`).
+  - `app_context`: contexto de aplicación para poder trabajar con la BBDD en cada test.
+
+### Áreas cubiertas por la suite
+
+- Autenticación ([tests/test_auth.py](tests/test_auth.py))
+  - Registro correcto de nuevo usuario.
+  - Detección de alias y email duplicados.
+  - Login correcto (crea sesión y redirige al perfil).
+  - Mensajes de error para alias/contraseña incorrectos.
+  - Cierre de sesión y protección de rutas mediante `acceso_requerido`.
+
+- Ejercicios ([tests/test_ejercicios.py](tests/test_ejercicios.py))
+  - Creación de ejercicios asociados al usuario logueado.
+  - Edición de ejercicios (actualización de campos y confidencialidad).
+  - Permisos: solo el autor puede editar o eliminar (otros usuarios reciben 403).
+
+- Sesiones y plannings ([tests/test_sesiones_planning.py](tests/test_sesiones_planning.py))
+  - Cálculo de `duracion` de una `Sesion` como suma de duraciones de ejercicios permitidos.
+  - Cálculo de `num_sesiones` de un `Planning` a partir de `sesiones_ids`.
+  - Filtrado de ejercicios no permitidos (no seguidos / confidenciales / IDs inválidos) al crear sesiones.
+  - Manejo de fechas inválidas (respuesta 400).
+  - Límite de 10 sesiones por planning.
+
+- Visibilidad y confidencialidad ([tests/test_visibilidad.py](tests/test_visibilidad.py))
+  - Listados de ejercicios/sesiones/plannings muestran:
+    - Siempre los propios.
+    - De usuarios seguidos solo elementos no confidenciales.
+  - Verificación de que contenido confidencial o de usuarios no seguidos no aparece en los listados del perfil.
+
+- Seguimiento de usuarios ([tests/test_seguimiento.py](tests/test_seguimiento.py))
+  - Envío de solicitud de seguimiento (estado `pendiente`).
+  - Aceptar/rechazar solicitudes desde el perfil del usuario seguido.
+  - Dejar de seguir (elimina relaciones en estado `aceptado`).
+  - Casos límite: no seguirse a uno mismo, no duplicar relaciones ya existentes (pendientes, aceptadas o rechazadas).
+
+### Cómo ejecutar los tests
+
+1. Crear/activar el entorno virtual.
+2. Instalar dependencias (si no se han instalado):
+   - `pip install -r requirements.txt`
+3. Desde la raíz del proyecto, ejecutar:
+   - `pytest`
+4. Por defecto se ejecutan todos los tests de la carpeta `tests/`. Se pueden filtrar, por ejemplo:
+   - `pytest tests/test_auth.py` para ejecutar solo los tests de autenticación.
 
 ## Ejemplos de flujos completos
 

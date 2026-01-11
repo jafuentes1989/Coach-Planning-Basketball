@@ -1,0 +1,56 @@
+/* Ajustes generales de responsividad para toda la app */
+
+body {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+main {
+    padding-bottom: 3rem;
+}
+
+/* Ajustes navbar */
+.navbar h1 {
+    font-size: 1.5rem;
+    margin-bottom: 0;
+}
+
+@media (max-width: 576px) {
+    .navbar h1 {
+        font-size: 1.25rem;
+    }
+}
+
+/* Tablas: hacer que se puedan desplazar horizontalmente en pantallas pequeñas */
+.table-responsive {
+    overflow-x: auto;
+}
+
+/* Imágenes de perfil y de ejercicios adaptables */
+.img-profile-responsive {
+    max-width: 100%;
+    height: auto;
+}
+
+.clickable-image {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Inputs pequeños de contadores en tarjetas de perfil */
+.input-counter-small {
+    width: 60px;
+    margin: 0 auto;
+}
+
+/* Mejorar separación en secciones */
+.section-wrapper {
+    padding-top: 1rem;
+    padding-bottom: 1.5rem;
+}
+
+@media (max-width: 576px) {
+    .section-wrapper {
+        padding-left: 0.75rem;
+        padding-right: 0.75rem;
+    }
+}

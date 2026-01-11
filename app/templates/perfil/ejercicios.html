@@ -2,7 +2,7 @@
 {% extends "plantilla.html" %}
 
 {% block content %}
-    <section class="container-fluid">
+    <section class="container-fluid section-wrapper">
         <nav class="navbar">
             <h1>{% block title %}Ejercicios{% endblock %}</h1>
             <a href="{{ url_for('ejercicios.crear_ejercicio') }}" class="btn btn-success">Nuevo</a>
@@ -53,7 +53,8 @@
             </div>
         </form>
 
-        <table class="table">
+    <div class="table-responsive">
+    <table class="table">
             <thead>
                 <tr>
                     <th class="col">ID</th>
@@ -137,6 +138,7 @@
                 {% endfor %}
             </tbody>
         </table>
+        </div>
 
         <!-- Modal detalle ejercicio -->
         <div class="modal fade" id="detalleEjercicioModal" tabindex="-1" aria-labelledby="detalleEjercicioModalLabel" aria-hidden="true">

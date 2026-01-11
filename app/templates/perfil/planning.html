@@ -2,13 +2,14 @@
 {% extends "plantilla.html" %}
 
 {% block content %}
-    <section class="container-fluid">
+    <section class="container-fluid section-wrapper">
         <nav class="navbar">
             <h1>{% block title %}Plannings{% endblock %}</h1>
             <a href="{{ url_for('planning.crear_planning') }}" class="btn btn-success">Nueva</a>
         </nav>
 
-        <table class="table">
+    <div class="table-responsive">
+    <table class="table">
             <thead>
                 <tr>
                     <th class="col">ID</th>
@@ -87,6 +88,7 @@
                 {% endfor %}
             </tbody>
         </table>
+        </div>
         
         <!-- Modal detalle planning -->
         <div class="modal fade" id="detallePlanningModal" tabindex="-1" aria-labelledby="detallePlanningModalLabel" aria-hidden="true">

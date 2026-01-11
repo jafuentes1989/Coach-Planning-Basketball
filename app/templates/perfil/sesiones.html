@@ -2,7 +2,7 @@
 {% extends "plantilla.html" %}
 
 {% block content %}
-    <section class="container-fluid">
+    <section class="container-fluid section-wrapper">
         <nav class="navbar">
             <h1>{% block title %}Sesiones{% endblock %}</h1>
             <a href="{{ url_for('sesiones.crear_sesion') }}" class="btn btn-success">Nueva</a>
@@ -29,7 +29,8 @@
             </div>
         </form>
 
-        <table class="table">
+    <div class="table-responsive">
+    <table class="table">
             <thead>
                 <tr>
                     <th class="col">ID</th>
@@ -113,6 +114,7 @@
                 {% endfor %}
             </tbody>
         </table>
+        </div>
         
         <!-- Modal detalle sesión -->
         <div class="modal fade" id="detalleSesionModal" tabindex="-1" aria-labelledby="detalleSesionModalLabel" aria-hidden="true">

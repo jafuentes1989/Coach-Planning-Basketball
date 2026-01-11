@@ -2,12 +2,13 @@
 {% extends "plantilla.html" %}
 
 {% block content %}
-    <section class="container-fluid">
+    <section class="container-fluid section-wrapper">
         <nav class="navbar">
             <h1>{% block title %}Seguidores{% endblock %}</h1>
         </nav>
 
-        <table class="table">
+    <div class="table-responsive">
+    <table class="table">
             <thead>
                 <tr>
                     <th class="col">alias</th>
@@ -53,5 +54,6 @@
                 {% endfor %}
             </tbody>
         </table>
+        </div>
     </section>
 {% endblock %}
